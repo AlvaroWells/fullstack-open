@@ -9,15 +9,6 @@
 //   )
 // }
 
-// function Total(props) {
-//   return (
-//     <footer>
-//       <p>
-//         Number of excercises {props.totalExercises}
-//       </p>
-//     </footer>
-//   )
-// }
 
 //CONTENT
 // const Content = (props) => {
@@ -50,8 +41,8 @@
 
 //EJEMPLOS PASANDO COMO OBJETO EL PROP
 //TITULO
-const Header = ( {course} ) => {
-  return <h1>{course}</h1>
+const Header = ({ course }) => {
+  return <h1>{course.name}</h1>
 }
 
 //CONTENIDO
@@ -73,14 +64,15 @@ const Header = ( {course} ) => {
 
 
 //TOTAL
-const Total = ( {totalExercises} ) => {
+const Total = ({ totalExercises }) => {
   return <p>Number of exercises {totalExercises}</p>
 }
 
 
 //1.2
 //pasamos como props dos argumentos en el componente Part que devuelve en un parrafo la informacion que se pasará por props en el componente padre
-const Part = ( {part, exercises} ) => {
+const Part = ({ part, exercises }) => {
+  //console.log(part)
   return (
       <p>
         {part} {exercises}
@@ -88,7 +80,8 @@ const Part = ( {part, exercises} ) => {
   )
 }
 //en el componente padre pasamos como props el objeto parts que contiene la informacion que vamos a mapear.
-const Content = ( {parts} ) => {
+const Content = ({ parts }) => {
+  //console.log(parts)
   return (
     <div>
       {parts.map((part, index) => (
@@ -100,20 +93,40 @@ const Content = ( {parts} ) => {
 
 
 const App = () => {
-  const course = 'Half Stack application development'
-  const part1 = 'Fundamentals of React'
-  const exercises1 = 10
-  const part2 = 'Using props to pass data'
-  const exercises2 = 7
-  const part3 = 'State of a component'
-  const exercises3 = 14
-  const totalExercises = exercises1 + exercises2 + exercises3
+  const course = {
+    name: 'Half Stack application development',
+    parts: [
+      {
+        name: 'Fundamentals of React',
+        exercises: 10
+      },
+      {
+        name: 'Using props to pass data',
+        exercises: 7
+      },
+      {
+        name: 'State of a component',
+        exercises: 14
+      }
+    ]
+  }
+  
+  // 1.4
+  const totalExercises = course.parts[0].exercises + course.parts[1].exercises + course.parts[2].exercises
 
-  const parts = [
-    { name: part1, exercises: exercises1 },
-    { name: part2, exercises: exercises2 },
-    { name: part3, exercises: exercises3 },
-  ]
+
+  // 1.2 && 1.3
+  // const parts = [
+  //   { name: part1.name, exercises: part1.exercises },
+  //   { name: part2.name, exercises: part2.exercises },
+  //   { name: part3.name, exercises: part3.exercises },
+  // ]
+
+
+  //1.5
+  const parts = course.parts
+  
+
   
   
   return (
