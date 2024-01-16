@@ -1,5 +1,13 @@
 import { useState } from 'react'
 
+
+const Statistics = (props) => {
+  return (
+    <p>{props.name}: {props.notes}</p>
+  )
+}
+
+
 const App = () => {
   // guarda los clics de cada botón en su propio estado
   const [notes, setNotes] = useState({
@@ -7,21 +15,12 @@ const App = () => {
     neutral: 0,
     bad: 0,
     total: 0,
-    average: 0,
-    positive: 0
   })
-  
-  
-  
-
-  //1.6
   const handleClickGood = () => {
     setNotes({
       ...notes,
       good: notes.good + 1,
       total: notes.total + 1,
-      average: (notes.good - notes.bad) / notes.total,
-      positive: notes.good / notes.total
     })
   }
   
@@ -30,8 +29,6 @@ const App = () => {
       ...notes,
       neutral: notes.neutral + 1,
       total: notes.total + 1,
-      average: (notes.good - notes.bad) / notes.total,
-      positive: notes.good / notes.total
     })
   }
   
@@ -40,11 +37,13 @@ const App = () => {
       ...notes,
       bad: notes.bad + 1,
       total: notes.total + 1,
-      average: (notes.good - notes.bad) / notes.total,
-      positive: notes.good / notes.total
     })
   }
-
+  
+  const average = (notes.good - notes.bad) / notes.total
+  const positive = notes.good / notes.total 
+  
+  
   
   return (
     <div>
@@ -55,14 +54,15 @@ const App = () => {
         <button onClick={handleClickBad}>bad</button>
       </span>
       <h2>statistics</h2>
-      <p>good: {notes.good}</p>
-      <p>neutral: {notes.neutral}</p>
-      <p>bad: {notes.bad}</p>
-      <p>all: {notes.total}</p>
-      <p>average: {notes.average}</p>
-      <p>positive: {notes.positive}%</p>
+      <Statistics name="good" notes={notes.good} />
+      <Statistics name="neutral" notes={notes.neutral} />
+      <Statistics name="bad" notes={notes.bad} />
+      <Statistics name="total" notes={notes.total} />
+      <Statistics name="average" notes={average} />
+      <Statistics name="positive" notes={positive} />
     </div>
   )
 }
 
 export default App
+
