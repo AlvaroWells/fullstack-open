@@ -3,7 +3,10 @@ import { useState } from "react";
 //Creamos el componente que mediante props recogemos la información que queramos renderizar. en este caso las props las usamos mediante desestructuración.
 const Statistics = ({ name, stats }) => {
   return (
-    <p>{name}: {stats}</p>
+    <tr>
+      <td>{name}</td>
+      <td>{stats}</td>
+    </tr>
   )
 }
 //Creamos componente Button donde le pasamos como props desestructuradas como parámetros donde le pasaremos la información apartir del componente donde renderizamos la aplicación.
@@ -40,8 +43,8 @@ export default function App() {
   //utilizamos la desestructuración de JS para almacenar la información del estado notes y poder hacer así los cálculos dependiendo del cambio de estado.
   const { good, neutral, bad } = notes
   const total = good + neutral + bad
-  const average = total === 0 ? 0 : (good - bad) / total
-  const positive = total === 0 ? 0 : (good / total) * 100 
+  const average = (good - bad) / total
+  const positive = total === 0 ? 0 : Math.floor((good / total) * 100) 
 
   //creamos una funcion que cambie el estado booleano de false a true cuando sea llamada con la funcion en el boton onclick
   const collectFeedback = () => {
@@ -61,14 +64,16 @@ export default function App() {
       </span>
       <h2>statistics</h2>
       {feedback ? (
-        <>
-          <Statistics name="good" stats={good} />
-          <Statistics name="neutral" stats={neutral} />
-          <Statistics name="bad" stats={bad} />
-          <Statistics name="total" stats={total} />
-          <Statistics name="average" stats={average} />
-          <Statistics name="positive" stats={`${positive}%`} />
-        </>
+        <table>
+          <tbody>
+            <Statistics name="good" stats={good} />
+            <Statistics name="neutral" stats={neutral} />
+            <Statistics name="bad" stats={bad} />
+            <Statistics name="total" stats={total} />
+            <Statistics name="average" stats={average} />
+            <Statistics name="positive" stats={`${positive}%`} />
+          </tbody>
+        </table>
       ) : (
         <p>No feedback given</p>
       )}
