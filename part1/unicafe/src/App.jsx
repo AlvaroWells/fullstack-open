@@ -5,7 +5,12 @@ const Statistics = ({ name, stats }) => {
   return (
     <p>{name}: {stats}</p>
   )
-
+}
+//Creamos componente Button donde le pasamos como props desestructuradas como parámetros donde le pasaremos la información apartir del componente donde renderizamos la aplicación.
+const Button = ({ label, onClick }) => {
+  return (
+    <button onClick={onClick}>{label}</button>
+  )
 }
 
 //componente padre, el cual es el responsable de renderizar la aplicación con JSX
@@ -18,6 +23,7 @@ export default function App() {
     neutral: 0,
     bad: 0,
   });
+  
   //creamos otro manejo de estados, que se inicializa con un estado booleano, en este caso , false
   const [feedback, setFeedback] = useState(false)
 
@@ -49,9 +55,9 @@ export default function App() {
     <div>
       <h1>give feedback</h1>
       <span>
-        <button onClick={() => { handleClickNotes('good'); collectFeedback(); }}>good</button>
-        <button onClick={() => { handleClickNotes('neutral'); collectFeedback(); }}>neutral</button>
-        <button onClick={() => { handleClickNotes('bad'); collectFeedback(); }}>bad</button>
+        <Button onClick={() => {handleClickNotes('good'); collectFeedback()}} label={'good'} />
+        <Button onClick={() => {handleClickNotes('neutral'); collectFeedback()}} label={'neutral'}/>
+        <Button onClick={() => {handleClickNotes('bad'); collectFeedback()}} label={'bad'} />
       </span>
       <h2>statistics</h2>
       {feedback ? (
