@@ -41,7 +41,7 @@ export default function App() {
   const { good, neutral, bad } = notes
   const total = good + neutral + bad
   const average = total === 0 ? 0 : (good - bad) / total
-  const positive = total === 0 ? 0 : good / total 
+  const positive = total === 0 ? 0 : (good / total) * 100 
 
   //creamos una funcion que cambie el estado booleano de false a true cuando sea llamada con la funcion en el boton onclick
   const collectFeedback = () => {
@@ -65,7 +65,7 @@ export default function App() {
           <Statistics name="good" stats={good} />
           <Statistics name="neutral" stats={neutral} />
           <Statistics name="bad" stats={bad} />
-          <Statistics names="total" stats={total} />
+          <Statistics name="total" stats={total} />
           <Statistics name="average" stats={average} />
           <Statistics name="positive" stats={`${positive}%`} />
         </>
