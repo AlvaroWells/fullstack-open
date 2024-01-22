@@ -82,3 +82,74 @@ export default function App() {
 }
 
 
+
+//CODIGO REPASO HECHO POR SEGUNDA VEZ, SÓLO CON DOCUMENTACIÓN Y IMPLEMENTANDO LO APRENDIDO.
+// import { useState } from "react";
+
+// const StatisticsLine = (props) => {
+//   return (
+//     <tr>
+//       <td>{props.name}</td>
+//       <td>{props.value}</td>
+//     </tr>
+//   );
+// };
+
+// const Button = ({ onClick, label }) => {
+//   return <button onClick={onClick}>{label}</button>;
+// };
+
+// const App = () => {
+//   // guarda los clics de cada botón en su propio estado
+//   const [votes, setVotes] = useState({
+//     good: 0,
+//     neutral: 0,
+//     bad: 0,
+//   });
+//   const [initialStatistics, setInitialStatistics] = useState(false);
+
+//   const handleClickVote = (type) => {
+//     setVotes((prevVotes) => ({
+//       ...prevVotes,
+//       [type]: prevVotes[type] + 1,
+//     }));
+//     setInitialStatistics(true);
+//   };
+
+//   const { good, neutral, bad } = votes;
+//   const total = good + neutral + bad;
+//   const average = (good - bad) / total;
+//   const positive = Math.floor((good / total) * 100);
+
+//   return (
+//     <>
+//       <div>
+//         <h1>give feedback</h1>
+//         <Button onClick={() => handleClickVote("good")} label={"good"} />
+//         <Button onClick={() => handleClickVote("neutral")} label={"neutral"} />
+//         <Button onClick={() => handleClickVote("bad")} label={"bad"} />
+//       </div>
+//       <div>
+//         <h2>statistics</h2>
+//         {initialStatistics ? (
+//           <>
+//             <table>
+//               <tbody>
+//                 <StatisticsLine name="good" value={good} />
+//                 <StatisticsLine name="neutral" value={neutral} />
+//                 <StatisticsLine name="bad" value={bad} />
+//                 <StatisticsLine name="total" value={total} />
+//                 <StatisticsLine name="average" value={average} />
+//                 <StatisticsLine name="positive" value={`${positive}%`} />
+//               </tbody>
+//             </table>
+//           </>
+//         ) : (
+//           <p>No statistics given</p>
+//         )}
+//       </div>
+//     </>
+//   );
+// };
+
+// export default App;
