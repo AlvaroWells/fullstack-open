@@ -6,6 +6,7 @@ export function PersonForm({ addNewPerson, newName, handleAddNewName, newNumber,
         <input 
           value={newName}
           onChange={handleAddNewName}
+          required
         >
         </input>
         <br />
@@ -13,6 +14,7 @@ export function PersonForm({ addNewPerson, newName, handleAddNewName, newNumber,
         <input
           value={newNumber}
           onChange={handleAddNewNumber}
+          required
         >
         </input>
         <div>

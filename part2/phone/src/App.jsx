@@ -1,81 +1,119 @@
-import { useState, useEffect } from "react"
-import axios from 'axios'
-import { Filter } from "./components/Filter"
-import { PersonForm } from "./components/PersonForm"
-import { Numbers } from "./components/Numbers"
-
-
-
-
-
+import { useState, useEffect } from "react";
+import { Filter } from "./components/Filter";
+import { PersonForm } from "./components/PersonForm";
+import { Number } from "./components/Number";
+import personService from './services/persons';
 
 const App = () => {
-  const [ persons, setPersons ] = useState([]) 
-  const [ newName, setNewName ] = useState('')
-  const [ newNumber, setNewNumber ] = useState('')
-  const [ personsFilter, setPersonsFilter ] = useState('')
-  
+  const [persons, setPersons] = useState([]); 
+  const [newName, setNewName] = useState('');
+  const [newNumber, setNewNumber] = useState('');
+  const [personsFilter, setPersonsFilter] = useState('');
+
+  // useEffect se utiliza para realizar efectos secundarios en componentes funcionales
   useEffect(() => {
-    console.log('Effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(res => {
-        console.log('promise fulfilled')
-        setPersons(res.data)
-      })
-  }, [])
-  console.log('render', persons.length, 'persons')
-  
-  //Funcion que previene el re-renderizado por defecto del formulario
+    // Cuando el componente se monta, obtenemos los datos iniciales de persons
+    personService
+      .getAll()
+      .then(initialPersons => {
+      setPersons(initialPersons);
+    });
+  }, []);
+
+  // Función para manejar el envío de un nuevo contacto o actualizar uno existente
   const addNewPerson = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     
-    const nameExist = persons.some(person => person.name === newName)
+    const nameExist = persons.some(person => person.name.toLowerCase() === newName.toLowerCase());
     
     if (nameExist) {
-      alert(`${newName} is alredy on the phonebook`)
+      const numberChange = window.confirm(`${newName} is already on the phonebook, replace the old number with a new one?`);
+  
+      if (numberChange) {
+        const existingPerson = persons.find(person => person.name.toLowerCase() === newName.toLowerCase());
+        const updatedPerson = { ...existingPerson, number: newNumber };
+  
+        // Llamamos al servicio para actualizar el contacto en el servidor
+        personService.updateObject(existingPerson.id, updatedPerson)
+          .then(returnedPerson => {
+            // Actualizamos el estado local con el contacto actualizado
+            setPersons(persons.map(person => (person.id === existingPerson.id ? returnedPerson : person)));
+            setNewName('');
+            setNewNumber('');
+          })
+          .catch(e => {
+            console.log('Error updating person:', e);
+          });
+      } else {
+        setNewName('');
+        setNewNumber('');
+      }
     } else {
+      // Si el nombre no existe, creamos un nuevo contacto
       const newPerson = {
         name: newName,
         number: newNumber,
-        id: persons.length + 1
-      }
-      setPersons(persons.concat(newPerson))
-      setNewName('')
-      setNewNumber('')
+      };
+  
+      // Llamamos al servicio para crear el nuevo contacto en el servidor
+      personService.createObject(newPerson)
+        .then(returnedPerson => {
+          // Actualizamos el estado local con el nuevo contacto
+          setPersons(persons.concat(returnedPerson));
+          setNewName('');
+          setNewNumber('');
+        });
     }
+  };
 
-
-  }
-
+  // Funciones para manejar cambios en el input de nombre y número
   const handleAddNewName = (e) => {
-    console.log(e.target.value)
-    setNewName(e.target.value)
+    setNewName(e.target.value);
   }
 
   const handleAddNewNumber = (e) => {
-    setNewNumber(e.target.value)
+    setNewNumber(e.target.value);
   }
 
+  // Función para manejar cambios en el input de filtro
   const handleFilteredNames = (e) => {
-    setPersonsFilter(e.target.value)
+    setPersonsFilter(e.target.value);
   }
 
-  
+  // Filtramos los contactos según el filtro ingresado
   const personsToShow = personsFilter
-    ? persons.filter(person => person.name.toLocaleLowerCase().includes(personsFilter.toLocaleLowerCase()))
-    : persons
+    ? persons.filter(person => person.name.toLowerCase().includes(personsFilter.toLowerCase()))
+    : persons;
 
+  // Función para manejar la eliminación de un contacto
+  const deleteNumber = (id, name) => {
+    const confirmDelete = window.confirm(`delete ${name}?`) 
 
+    if (confirmDelete) {
+      // Llamamos al servicio para eliminar el contacto en el servidor
+      personService.deleteObject(id)
+        .then(() => {
+          // Actualizamos el estado local excluyendo el contacto eliminado
+          setPersons((prevPersons) =>
+            prevPersons.filter((person) => person.id !== id)
+          )
+        })
+    } else {
+      personsToShow;
+    }
+  }
 
+  // Renderizamos el componente
   return (
     <div>
       <h2>Phonebook</h2>
+      {/* Componente de filtro */}
       <Filter 
         personsFilter={personsFilter}
         handleFilteredNames={handleFilteredNames}
       />
       <h3>add a new</h3>
+      {/* Componente de formulario para agregar/editar contactos */}
       <PersonForm 
         addNewPerson={addNewPerson}
         newName={newName}
@@ -84,12 +122,15 @@ const App = () => {
         handleAddNewNumber={handleAddNewNumber}
       />
       <h3>Numbers</h3>
-      <Numbers 
-        personsToShow={personsToShow}
-      />
+      {/* Componentes para mostrar la lista de contactos */}
+      {personsToShow.map((person) => (
+        <Number
+          key={person.id}
+          person={person}
+          deletePerson={() => deleteNumber(person.id, person.name)} />
+      ))}
     </div>
-    
-  )
+  );
 }
 
-export default App
+export default App;
