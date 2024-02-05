@@ -4,7 +4,7 @@ export const Note = ({ note, toogleImportance }) => {
     ? 'make not important' : 'make important'
   
   return (
-    <li>
+    <li className="note">
       {note.content}
       <button onClick={toogleImportance}>{label}</button>
     </li>
