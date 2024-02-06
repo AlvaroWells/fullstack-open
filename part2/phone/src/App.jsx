@@ -2,13 +2,20 @@ import { useState, useEffect } from "react";
 import { Filter } from "./components/Filter";
 import { PersonForm } from "./components/PersonForm";
 import { Number } from "./components/Number";
+import { Notification } from "./components/Notification";
 import personService from './services/persons';
+import'./index.css'
 
 const App = () => {
   const [persons, setPersons] = useState([]); 
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [personsFilter, setPersonsFilter] = useState('');
+  const [message, setMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
+  
+  
+
 
   // useEffect se utiliza para realizar efectos secundarios en componentes funcionales
   useEffect(() => {
@@ -41,9 +48,14 @@ const App = () => {
             setNewName('');
             setNewNumber('');
           })
-          .catch(e => {
-            console.log('Error updating person:', e);
-          });
+          .catch(error => {
+            setErrorMessage(
+              `Failed to delete contact ${existingPerson.name}`
+            )
+          })
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 3000)
       } else {
         setNewName('');
         setNewNumber('');
@@ -59,6 +71,12 @@ const App = () => {
       personService.createObject(newPerson)
         .then(returnedPerson => {
           // Actualizamos el estado local con el nuevo contacto
+          setMessage(
+            `Added ${newPerson.name}`
+          )
+          setTimeout(() => {
+            setMessage(null)    
+          }, 3000)
           setPersons(persons.concat(returnedPerson));
           setNewName('');
           setNewNumber('');
@@ -97,7 +115,11 @@ const App = () => {
           setPersons((prevPersons) =>
             prevPersons.filter((person) => person.id !== id)
           )
+          setErrorMessage(`Contact ${name} deleted successfully`)
         })
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 3000)
     } else {
       personsToShow;
     }
@@ -112,6 +134,9 @@ const App = () => {
         personsFilter={personsFilter}
         handleFilteredNames={handleFilteredNames}
       />
+      <Notification 
+        addMessage={message} 
+        errorMessage={errorMessage}/>
       <h3>add a new</h3>
       {/* Componente de formulario para agregar/editar contactos */}
       <PersonForm 
