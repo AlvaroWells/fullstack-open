@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
-
-app.use(express.json())
+//middelware morgan
+const morgan = require('morgan')
 
 let persons = [
   { 
@@ -25,6 +25,37 @@ let persons = [
     "number": "39-23-6423122"
   }
 ]
+
+//json-parser de express para poder utilizar el body del objeto request
+app.use(express.json())
+//formato string predefinido de morgan
+// app.use(morgan(`:method :url :status :res[content-length] - :response-time ms :req[body.name]`))
+
+//middleware para registrar el cuerpo de la solicitud
+app.use((req, res, next) => {
+  //almacena el cuerpo de la solicitud en una propiedad personalizada
+  req.logData = req.body
+  next()
+})
+
+//Utilizamos Morgan con un formato personalizado que incluya el cuerpo de la solicitud
+app.use(morgan((tokens, req, res) => {
+  //accedemos al cuerpoo de la solicitud almacenado en la propiedad solicitada
+  const bodyData = req.logData 
+    ? JSON.stringify(req.logData)
+    : ''
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'),
+    '-',
+    tokens['response-time'](req, res),
+    'ms',
+    //aquí agregamos el cuerpo de la solicitud al registro
+    bodyData
+  ].join(' ') 
+}))
 
 //url de la informacion del objeto
 app.get('/api/persons', (req, res) => {
@@ -64,17 +95,12 @@ app.delete('/api/persons/:id', (req, res) => {
   res.status(204).end()
 })
 
-//funcion para generar una id
-const generateId = () => {
-  const randomId = Math.floor(Math.random() * 1000)
-  return randomId
-}
 
 //petición post de nuevas entries al servidor
 app.post('/api/persons', (req, res) => {
   const body = req.body
-  console.log(body)
-
+  // console.log(body)
+  
   if (!body.name || !body.number) {
     return res.status(400).json({
       error: 'name or number missing'
@@ -82,7 +108,7 @@ app.post('/api/persons', (req, res) => {
   }
   //utilizando el metodo some si cumple la condicion se agrega a la constante nameExists
   const nameExists = persons.some(person => person.name.toLocaleLowerCase() === body.name.toLocaleLowerCase())
-
+  
   //si existe algún nombre repetido nos devuelve un error
   if (nameExists) {
     return res.status(400).json({
@@ -100,6 +126,11 @@ app.post('/api/persons', (req, res) => {
   res.json(newPerson)
 })
 
+//funcion para generar una id
+const generateId = () => {
+  const randomId = Math.floor(Math.random() * 1000)
+  return randomId
+}
 
 
 
