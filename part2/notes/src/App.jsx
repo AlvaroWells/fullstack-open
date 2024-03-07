@@ -67,9 +67,9 @@ export const App = () => {
       .then(returnedNote => {
         setNotes(notes.map(note => note.id !== id ? note : returnedNote))
       })
-      .catch(error => {
+      .catch(e => {
         setErrorMessage(
-          `Note '${note.content}' was alredy removed from server`
+          e, `Note '${note.content}' was alredy removed from server`
         )
         setTimeout(() => {
           setErrorMessage(null)
