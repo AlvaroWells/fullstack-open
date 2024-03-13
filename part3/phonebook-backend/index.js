@@ -36,6 +36,9 @@ app.use(express.json())
 //Le decimos a la app que utilize el paquete de cors
 app.use(cors())
 
+//para mostrar el contenido estatico de la aplicación utilizamos la siguiente línea
+app.use(express.static('dist'))
+
 //middleware para registrar el cuerpo de la solicitud
 app.use((req, res, next) => {
   //almacena el cuerpo de la solicitud en una propiedad personalizada
