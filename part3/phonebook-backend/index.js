@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 //middelware morgan
 const morgan = require('morgan')
+//política de cors
+const cors = require('cors')
 
 let persons = [
   { 
@@ -31,6 +33,9 @@ app.use(express.json())
 //formato string predefinido de morgan
 // app.use(morgan(`:method :url :status :res[content-length] - :response-time ms :req[body.name]`))
 
+//Le decimos a la app que utilize el paquete de cors
+app.use(cors())
+
 //middleware para registrar el cuerpo de la solicitud
 app.use((req, res, next) => {
   //almacena el cuerpo de la solicitud en una propiedad personalizada
@@ -56,6 +61,10 @@ app.use(morgan((tokens, req, res) => {
     bodyData
   ].join(' ') 
 }))
+
+app.get('/', (req, res) => {
+  res.send('<h1>Backend API persons phonebook</h1>')
+})
 
 //url de la informacion del objeto
 app.get('/api/persons', (req, res) => {
