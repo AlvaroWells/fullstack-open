@@ -1,31 +1,15 @@
 const express = require('express')
+//importamos las variables de entorno
+//política de cors
+const cors = require('cors')
+require('dotenv').config()
 const app = express()
 //middelware morgan
 const morgan = require('morgan')
-//política de cors
-const cors = require('cors')
+//importamos el modulo Person
+const Person = require('./modules/person')
 
 let persons = [
-  { 
-    "id": 1,
-    "name": "Arto Hellas", 
-    "number": "040-123456"
-  },
-  { 
-    "id": 2,
-    "name": "Ada Lovelace", 
-    "number": "39-44-5323523"
-  },
-  { 
-    "id": 3,
-    "name": "Dan Abramov", 
-    "number": "12-43-234345"
-  },
-  { 
-    "id": 4,
-    "name": "Mary Poppendieck", 
-    "number": "39-23-6423122"
-  }
 ]
 
 //json-parser de express para poder utilizar el body del objeto request
@@ -71,13 +55,18 @@ app.get('/', (req, res) => {
 
 //url de la informacion del objeto
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  Person
+    .find({})
+    .then(persons => {
+      console.log(persons)
+      res.json(persons)
+    })
 })
 
 //url con la información detallada de las personas y hora de la lista
 app.get('/api/info', (req, res) => {
   const infoDate = new Date()
-  const personsInfo = persons.length
+  const personsInfo = Person.length
   res.send(
     `
       <p>Phonebook has info for ${personsInfo} people
@@ -89,14 +78,11 @@ app.get('/api/info', (req, res) => {
 
 //url con la información detallada de una entry
 app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = persons.find(person => person.id === id)
-  
-  if (person) {
-    res.json(person)
-  } else {
-    res.status(404).end()
-  }
+  Person
+    .findById(req.params.id)
+    .then(person => {
+      res.json(person)
+    })
 })
 
 //petición delete al servidor
@@ -128,26 +114,28 @@ app.post('/api/persons', (req, res) => {
     })
   }
   //creamos la nueva persona para agregar al array
-  const newPerson = {
-    id: generateId(),
+  const newPerson = new Person({
     name: String(body.name),
     number: String(body.number)
-  }
+  })
   //utilizando el método concat agregamos al array el nuevo objeto
-  persons = persons.concat(newPerson)
-  res.json(newPerson)
+  newPerson
+    .save()
+    .then(savedPerson => {
+      res.json(savedPerson)
+    })
 })
 
 //funcion para generar una id
-const generateId = () => {
-  const randomId = Math.floor(Math.random() * 1000)
-  return randomId
-}
+// const generateId = () => {
+//   const randomId = Math.floor(Math.random() * 1000)
+//   return randomId
+// }
 
 
 
 // Servidor y puerto de escucha
-const PORT =  process.env.PORT || 3001 
+const PORT =  process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
