@@ -155,15 +155,15 @@ app.post('/api/persons', (req, res) => {
       error: 'name or number missing'
     })
   }
-  //utilizando el metodo some si cumple la condicion se agrega a la constante nameExists
-  const nameExists = persons.some(person => person.name.toLocaleLowerCase() === body.name.toLocaleLowerCase())
+  // //utilizando el metodo some si cumple la condicion se agrega a la constante nameExists
+  // const nameExists = persons.some(person => person.name.toLocaleLowerCase() === body.name.toLocaleLowerCase())
   
-  //si existe algún nombre repetido nos devuelve un error
-  if (nameExists) {
-    return res.status(400).json({
-      error: 'name must be unique'
-    })
-  }
+  // //si existe algún nombre repetido nos devuelve un error
+  // if (nameExists) {
+  //   return res.status(400).json({
+  //     error: 'name must be unique'
+  //   })
+  // }
   //creamos la nueva persona para agregar al array
   const newPerson = new Person({
     name: String(body.name),
