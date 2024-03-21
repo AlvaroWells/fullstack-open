@@ -41,33 +41,6 @@ personSchema.set('toJSON', {
 //modelo que utilizará la base de datos para guardar la información que proporcionaremos, convertirá en plural y en minúsculas el nombre de la constante
 // const Person = mongoose.model('Person', personSchema)
 
-// //nombre y número de teléfono que recibiremos por línea de comando para agregar a la nueva persona en la bd
-// const personName = process.argv[3]
-// const personNumber = process.argv[4]
 
-// //Los datos que almacenaremos en la base de datos de mongodb atlas
-// const person = new Person({
-//   name: personName,
-//   number: personNumber
-// })
-
-// if (personName === undefined && personNumber === undefined) {
-//   Person
-//     .find({})
-//     .then(result => {
-//       console.log("phonebook:")
-//       result.forEach(person => {
-//         console.log(
-//           `${person.name} ${person.number}`
-//         )
-//       })
-//     mongoose.connection.close()
-//   })
-// } else {
-//   person.save().then(result => {
-//     console.log(`added ${personName} number ${personNumber} to phonebook`)
-//     mongoose.connection.close()
-//   })
-// }
 
 module.exports = mongoose.model('Person', personSchema)

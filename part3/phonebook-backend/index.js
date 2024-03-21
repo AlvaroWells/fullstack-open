@@ -1,27 +1,77 @@
 const express = require('express')
-//importamos las variables de entorno
-//política de cors
-const cors = require('cors')
-require('dotenv').config()
 const app = express()
-//middelware morgan
-const morgan = require('morgan')
-//importamos el modulo Person
+require('dotenv').config()
+const mongoose = require('mongoose')
+
 const Person = require('./modules/person')
 
-let persons = [
-]
-
-//json-parser de express para poder utilizar el body del objeto request
-app.use(express.json())
-//formato string predefinido de morgan
-// app.use(morgan(`:method :url :status :res[content-length] - :response-time ms :req[body.name]`))
-
-//Le decimos a la app que utilize el paquete de cors
-app.use(cors())
 
 //para mostrar el contenido estatico de la aplicación utilizamos la siguiente línea
 app.use(express.static('dist'))
+
+const cors = require('cors')
+
+app.use(cors())
+app.use(express.json())
+
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+
+app.use(requestLogger)
+
+//función middleware de Express con funcionalidad de control de errores
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+  
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+    
+  next(error)
+}
+
+// funcion para controlar solicitudes con endpoint desconocido
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+//nombre y número de teléfono que recibiremos por 'línea de comando' para agregar a la nueva persona en la bd
+const personName = process.argv[3]
+const personNumber = process.argv[4]
+
+//Los datos que almacenaremos en la base de datos de mongodb atlas
+const person = new Person({
+  name: personName,
+  number: personNumber
+})
+
+if (personName === undefined && personNumber === undefined) {
+  Person
+    .find({})
+    .then(result => {
+      console.log("phonebook:")
+      result.forEach(person => {
+        console.log(
+          `${person.name} ${person.number}`
+        )
+      })
+    // mongoose.connection.close()
+  })
+} else {
+  person
+    .save()
+    .then(result => {
+    console.log(`added ${personName} number ${personNumber} to phonebook`)
+    // mongoose.connection.close()
+  })
+}
+
+const morgan = require('morgan')
 
 //middleware para registrar el cuerpo de la solicitud
 app.use((req, res, next) => {
@@ -34,8 +84,8 @@ app.use((req, res, next) => {
 app.use(morgan((tokens, req, res) => {
   //accedemos al cuerpoo de la solicitud almacenado en la propiedad solicitada
   const bodyData = req.logData 
-    ? JSON.stringify(req.logData)
-    : ''
+  ? JSON.stringify(req.logData)
+  : ''
   return [
     tokens.method(req, res),
     tokens.url(req, res),
@@ -56,11 +106,11 @@ app.get('/', (req, res) => {
 //url de la informacion del objeto
 app.get('/api/persons', (req, res) => {
   Person
-    .find({})
-    .then(persons => {
-      console.log(persons)
-      res.json(persons)
-    })
+  .find({})
+  .then(people => {
+    console.log(people)
+    res.json(people)
+  })
 })
 
 //url con la información detallada de las personas y hora de la lista
@@ -86,13 +136,14 @@ app.get('/api/persons/:id', (req, res) => {
 })
 
 //petición delete al servidor
-app.delete('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  persons = persons.filter(person => person.id !== id)
-
-  res.status(204).end()
+app.delete('/api/persons/:id', (req, res, next) => {
+  Person
+    .findByIdAndDelete(req.params.id)
+    .then(result => {
+      res.status(204).end()
+    })
+    .catch(error => next(error))
 })
-
 
 //petición post de nuevas entries al servidor
 app.post('/api/persons', (req, res) => {
@@ -126,13 +177,27 @@ app.post('/api/persons', (req, res) => {
     })
 })
 
-//funcion para generar una id
-// const generateId = () => {
-//   const randomId = Math.floor(Math.random() * 1000)
-//   return randomId
-// }
+//método put para hacer cambios desde el backend
+app.put('/api/persons/:id', (req, res, next) => {
+  const body = req.body
 
+  const person = {
+    name: body.name,
+    number: body.number,
+  }
 
+  Person
+    .findByIdAndUpdate(req.params.id, person, { new: true })
+    .then(updatedPerson => {
+      res.json(updatedPerson)
+    })
+    .catch(error => next(error))
+})
+
+// controlador de solicitudes con endpoint desconocido
+app.use(unknownEndpoint)
+// controlador de solicitudes con errores del cliente
+app.use(errorHandler)
 
 // Servidor y puerto de escucha
 const PORT =  process.env.PORT
