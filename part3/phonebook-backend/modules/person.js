@@ -1,5 +1,6 @@
 //importamos mongoose
 const mongoose = require('mongoose')
+const assert = require('assert')
 
 // Deshabilitar el modo estricto de consulta en Mongoose para permitir la creación de propiedades adicionales en documentos.
 mongoose.set('strictQuery', false) 
@@ -20,10 +21,55 @@ mongoose
   })
 
 //El esquema que utilizaremos para guardar la información a la base de datos
+// const personSchema = new mongoose.Schema({ 
+//   name: String,
+//   number: String,
+// })
+
 const personSchema = new mongoose.Schema({ 
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: [3, `{VALUE} is too short`],
+    maxLength: [],
+    // required: true
+  },
+  number: {
+    type: String,
+    validate: {
+      validator: function(v) {
+        return /\d{3}-\d{8}/.test(v)
+      },
+      message: props => `${props.value} is not a valid phone number`,
+      validator: function(v) {
+        return /\d{2}-\d{7}/.test(v)
+      },
+      message: props => `${props.value} is not a valid phone number`
+    },
+    required: [true, "User phone number is required"]
+  }
 })
+
+const Person = mongoose.model('Person', personSchema)
+const person = new Person()
+let error
+
+person.number = '555.0123'
+error = person.validateSync()
+assert.equal(error.errors['number'].message,
+  '555.0123 is not a valid phone number')
+
+person.number = ''
+error = person.validateSync()
+assert.equal(error.errors['number'].message,
+  'User phone number is required')
+
+person.number = '203-55012312'
+error = person.validateSync()
+assert.equal(error, null)
+
+person.number = '20-5501231'
+error = person.validateSync()
+assert.equal(error, null)
 
 // Configuramos la transformación de la representación JSON de los documentos de la base de datos.
 // Esto cambia la propiedad '_id' del documento a una cadena ('string') y la asigna a la propiedad 'id',
@@ -39,8 +85,4 @@ personSchema.set('toJSON', {
 })
 
 //modelo que utilizará la base de datos para guardar la información que proporcionaremos, convertirá en plural y en minúsculas el nombre de la constante
-// const Person = mongoose.model('Person', personSchema)
-
-
-
 module.exports = mongoose.model('Person', personSchema)

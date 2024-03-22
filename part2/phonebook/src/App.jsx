@@ -41,7 +41,8 @@ const App = () => {
         const updatedPerson = { ...existingPerson, number: newNumber };
   
         // Llamamos al servicio para actualizar el contacto en el servidor
-        personService.updateObject(existingPerson.id, updatedPerson)
+        personService
+          .updateObject(existingPerson.id, updatedPerson)
           .then(returnedPerson => {
             // Actualizamos el estado local con el contacto actualizado
             setPersons(persons.map(person => (person.id === existingPerson.id ? returnedPerson : person)));
@@ -66,9 +67,11 @@ const App = () => {
         name: newName,
         number: newNumber,
       };
-  
+
+      
       // Llamamos al servicio para crear el nuevo contacto en el servidor
-      personService.createObject(newPerson)
+      personService
+        .createObject(newPerson)
         .then(returnedPerson => {
           // Actualizamos el estado local con el nuevo contacto
           setMessage(
@@ -80,7 +83,17 @@ const App = () => {
           setPersons(persons.concat(returnedPerson));
           setNewName('');
           setNewNumber('');
-        });
+        })
+        .catch(error => {
+          setErrorMessage(
+            error.response.data.error
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 3000)
+          console.log(error.response.data.error)
+        })
+      
     }
   };
 
@@ -109,7 +122,8 @@ const App = () => {
 
     if (confirmDelete) {
       // Llamamos al servicio para eliminar el contacto en el servidor
-      personService.deleteObject(id)
+      personService
+        .deleteObject(id)
         .then(() => {
           // Actualizamos el estado local excluyendo el contacto eliminado
           setPersons((prevPersons) =>
