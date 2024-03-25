@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const assert = require('assert')
 
 // Deshabilitar el modo estricto de consulta en Mongoose para permitir la creación de propiedades adicionales en documentos.
-mongoose.set('strictQuery', false) 
+mongoose.set('strictQuery', false)
 
 //almacenamos dentro de la variable la contraseña como variable de entorno
 const url = process.env.MONGODB_URI
@@ -14,19 +14,19 @@ console.log('connecting to', url)
 mongoose
   .connect(url)
   .then(result => {
-    console.log('connected to MongoDB')
+    console.log(result, 'connected to MongoDB')
   })
   .catch((e) => {
     console.log('error connecting to MongoDB:', e.message)
   })
 
 //El esquema que utilizaremos para guardar la información a la base de datos
-// const personSchema = new mongoose.Schema({ 
+// const personSchema = new mongoose.Schema({
 //   name: String,
 //   number: String,
 // })
 
-const personSchema = new mongoose.Schema({ 
+const personSchema = new mongoose.Schema({
   name: {
     type: String,
     minLength: [3, `{VALUE} is too short`],
@@ -36,14 +36,14 @@ const personSchema = new mongoose.Schema({
   number: {
     type: String,
     validate: {
-      validator: function(v) {
+      validatorOne: function(v) {
         return /\d{3}-\d{8}/.test(v)
       },
-      message: props => `${props.value} is not a valid phone number`,
-      validator: function(v) {
+      messageOne: props => `${props.value} is not a valid phone number`,
+      validatorTwo: function(v) {
         return /\d{2}-\d{7}/.test(v)
       },
-      message: props => `${props.value} is not a valid phone number`
+      messageTwo: props => `${props.value} is not a valid phone number`
     },
     required: [true, "User phone number is required"]
   }

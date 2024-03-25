@@ -1,10 +1,8 @@
 const express = require('express')
 const app = express()
 require('dotenv').config()
-const mongoose = require('mongoose')
 
 const Person = require('./modules/person')
-
 
 //para mostrar el contenido estatico de la aplicación utilizamos la siguiente línea
 app.use(express.static('dist'))
@@ -27,13 +25,13 @@ app.use(requestLogger)
 //función middleware de Express con funcionalidad de control de errores
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
-  
+
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
   }
-    
+
   next(error)
 }
 
@@ -63,14 +61,14 @@ if (personName === undefined && personNumber === undefined) {
         )
       })
     // mongoose.connection.close()
-  })
+    })
 } else {
   person
     .save()
     .then(result => {
-    console.log(`added ${personName} number ${personNumber} to phonebook`)
-    // mongoose.connection.close()
-  })
+      console.log(result, `added ${personName} number ${personNumber} to phonebook`)
+      // mongoose.connection.close()
+    })
 }
 
 const morgan = require('morgan')
@@ -85,9 +83,9 @@ app.use((req, res, next) => {
 //Utilizamos Morgan con un formato personalizado que incluya el cuerpo de la solicitud
 app.use(morgan((tokens, req, res) => {
   //accedemos al cuerpoo de la solicitud almacenado en la propiedad solicitada
-  const bodyData = req.logData 
-  ? JSON.stringify(req.logData)
-  : ''
+  const bodyData = req.logData
+    ? JSON.stringify(req.logData)
+    : ''
   return [
     tokens.method(req, res),
     tokens.url(req, res),
@@ -98,7 +96,8 @@ app.use(morgan((tokens, req, res) => {
     'ms',
     //aquí agregamos el cuerpo de la solicitud al registro
     bodyData
-  ].join(' ') 
+  ]
+    .join(' ')
 }))
 
 app.get('/', (req, res) => {
@@ -108,11 +107,11 @@ app.get('/', (req, res) => {
 //url de la informacion del objeto
 app.get('/api/persons', (req, res) => {
   Person
-  .find({})
-  .then(people => {
-    console.log(people)
-    res.json(people)
-  })
+    .find({})
+    .then(people => {
+      console.log(people)
+      res.json(people)
+    })
 })
 
 //url con la información detallada de las personas y hora de la lista
@@ -138,11 +137,12 @@ app.get('/api/persons/:id', (req, res) => {
 })
 
 //petición delete al servidor
-app.delete('/api/persons/:id', (req, res, next) => {
+app.delete('/api/persons/:id', (req, response, next) => {
   Person
     .findByIdAndDelete(req.params.id)
     .then(result => {
-      res.status(204).end()
+      console.log(result)
+      response.status(204).end()
     })
     .catch(error => next(error))
 })
@@ -150,8 +150,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 //petición post de nuevas entries al servidor
 app.post('/api/persons', (req, res, next) => {
   const body = req.body
-  // console.log(body)
-  
+
   if (!body.name || !body.number) {
     return res.status(400).json({
       error: 'name or number missing'
@@ -159,7 +158,7 @@ app.post('/api/persons', (req, res, next) => {
   }
   // //utilizando el metodo some si cumple la condicion se agrega a la constante nameExists
   // const nameExists = persons.some(person => person.name.toLocaleLowerCase() === body.name.toLocaleLowerCase())
-  
+
   // //si existe algún nombre repetido nos devuelve un error
   // if (nameExists) {
   //   return res.status(400).json({
@@ -192,7 +191,7 @@ app.put('/api/persons/:id', (req, res, next) => {
   Person
     .findByIdAndUpdate(
       req.params.id,
-      { name, number }, 
+      { name, number },
       { new: true, runValidators: true, context: 'query' }
     )
     .then(updatedPerson => {
