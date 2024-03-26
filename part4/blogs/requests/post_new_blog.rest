@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs/ HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "Comer sano por las mañanas",
+  "author": "María Beltrán",
+  "url": "https://comersanoporlasmañanas.com",
+  "likes": 2200
+}
