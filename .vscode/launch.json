@@ -6,16 +6,7 @@
   "configurations": [
     {
       "name": "Launch Program",
-      "program": "${workspaceFolder}/part3/part3-notes-backend-main/mongo.js",
-      "request": "launch",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "type": "node"
-    },
-    {
-      "name": "Launch Program",
-      "program": "${workspaceFolder}\\part3\\part3-notes-backend-main\\index.js",
+      "program": "${workspaceFolder}/part4/blogs/utils/list_helper.js",
       "request": "launch",
       "skipFiles": [
         "<node_internals>/**"
