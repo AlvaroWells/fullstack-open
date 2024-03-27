@@ -16,11 +16,11 @@ const unknownEndpoint = (request, response) => {
 //función middleware de Express con funcionalidad de control de errores
 const errorHandler = (error, request, response, next) => {
   logger.error(error.message)
-    
+
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   }
-    
+
   next(error)
 }
 
