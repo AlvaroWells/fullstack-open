@@ -17,13 +17,17 @@ const totalLikes = (blogs) => {
 
 const favoriteBlog = (blogs) => {
   //Contenedor de todos los likes de los blogs que lleguen por parámetros
-  const likesArray = blogs.map(blog => blog.likes)
-  console.log(likesArray)
-  const favoriteBlog = likesArray.reduce((max, currentValue) => {
-    return currentValue > max
-      ? currentValue
-      : max
-  },likesArray[0])
+  const likesArray = blogs.map((blog) => ({
+    title: blog.title, 
+    author: blog.author,
+    likes: blog.likes
+  }))
+  
+  const favoriteBlog = likesArray.find((blog) => {
+    return blog.likes === Math.max(...likesArray.map(blog => blog.likes))
+  })
+  
+  return favoriteBlog
 }
 
 
