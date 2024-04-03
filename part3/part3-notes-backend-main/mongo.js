@@ -5,12 +5,13 @@ if (process.argv.length < 3) {
   process.exit(1)
 }
 
-// mongodb+srv://alvarogwells:<password>@cluster0.zxcwm3n.mongodb.net/
 
 const password = process.argv[2]
 
-const url = 
-  `mongodb+srv://alvarogwells:${password}@cluster0.zxcwm3n.mongodb.net/noteApp?retryWrites=true&w=majority&appName=Cluster0`
+const url =
+  `mongodb+srv://alvarogwells:${password}@cluster0.zxcwm3n.mongodb.net/testNoteApp?retryWrites=true&w=majority&appName=Cluster0`
+
+// const url = process.env.TEST_MONGODB_URI
 
 mongoose.set('strictQuery', false)
 mongoose.connect(url)
@@ -26,20 +27,18 @@ const Note = mongoose.model('Note', noteSchema)
 
 //A continuación la aplicación crea un nuevo objeto de nota con la ayuda del modelo Note:
 const note = new Note({
-  content: 'Hoy gano al padel 100%',
-  important: false,
+  content: 'A buba le gano 100%',
+  important: true,
 })
 
 
 //Guardar el objeto en la base de datos ocurre con el método save, que se puede proporcionar con un controlador de eventos con el método then:
-// note.save().then(result => {
-  //   console.log(result)
-  //   console.log('note saved!')
-  //   mongoose.connection.close()
-  // })
-  
-  
-  
+note.save().then(result => {
+  console.log(result)
+  console.log('note saved!')
+  mongoose.connection.close()
+})
+
 Note.find({ important: true }).then(result => {
   result.forEach(note => {
     console.log(note)

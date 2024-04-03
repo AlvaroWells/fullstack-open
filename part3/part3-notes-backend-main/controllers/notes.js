@@ -1,32 +1,29 @@
 const notesRouter = require('express').Router()
 const Note = require('../models/note')
 
-notesRouter.get('/', (req, res) => {
-  Note
-    .find({})
-    .then(notes => {
-      res.json(notes)
-    })
+notesRouter.get('/', async (request, response) => {
+  const notes = await Note.find({})
+  response.json(notes)
 })
 
-notesRouter.get('/:id', (req, res, next) => {
-  Note
-    .findById(req.params.id)
-    .then(note => {
-      if (note) {
-        res.json(note)
-      } else {
-        res.status(404).end()
-      }
-    })
-    .catch(error => next(error))
+notesRouter.get('/:id', async (request, response, next) => {
+  try {
+    const note = await Note.findById(request.params.id)
+    if (note) {
+      response.json(note)
+    } else {
+      response.status(404).end()
+    }
+  } catch(exception) {
+    next(exception)
+  }
 })
 
-notesRouter.post('/', (req, res, next) => {
-  const body = req.body
+notesRouter.post('/', async (request, response, next) => {
+  const body = request.body
 
   if (!body.content) {
-    return res.status(400).json({
+    return response.status(400).json({
       error: 'content missing'
     })
   }
@@ -36,21 +33,21 @@ notesRouter.post('/', (req, res, next) => {
     important: body.important || false,
   })
 
-  note
-    .save()
-    .then(savedNote => {
-      res.json(savedNote)
-    })
-    .catch(error => next(error))
+  try {
+    const savedNote = await note.save()
+    response.status(201).json(savedNote)
+  } catch(exception) {
+    next(exception)
+  }
 })
 
-notesRouter.delete('/:id', (req, res, next) => {
-  Note
-    .findByIdAndDelete(req.params.id)
-    .then(() => {
-      res.status(204).end()
-    })
-    .catch(error => next(error))
+notesRouter.delete('/:id', async (request, response, next) => {
+  try {
+    await Note.findByIdAndDelete(request.params.id)
+    response.status(204).end()
+  } catch(exception) {
+    next(exception)
+  }
 })
 
 notesRouter.put('/:id', (req, res, next) => {
