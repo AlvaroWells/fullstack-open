@@ -2,6 +2,7 @@
 const config = require('./utils/config')
 // Importación del framework Express para crear el servidor web.
 const express = require('express')
+require('express-async-errors')
 // Creación de una instancia de la aplicación Express.
 const app = express()
 // Importación del middleware CORS para habilitar el intercambio de recursos entre diferentes orígenes.
