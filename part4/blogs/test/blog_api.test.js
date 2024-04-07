@@ -52,6 +52,31 @@ test('a new blog can be added', async () => {
   )
 })
 
+test('if likes property is missing, it defaults to 0', async () => {
+  let newBlog = {
+    title: 'newblog',
+    author: 'yourself',
+    url: 'https://whatever.rer',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await helper.blogsInDb()
+  console.log(response)
+  newBlog = response.find(b => b.likes === undefined)
+  // console.log(newBlog)
+  newBlog.likes = 0
+  // console.log(newBlog)
+
+  const likes = await helper.findLike()
+  expect(likes).toBeDefined()
+  expect(newBlog.likes).toBe(0)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
