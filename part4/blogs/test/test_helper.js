@@ -35,13 +35,17 @@ const findId = async () => {
   const id = response.map(r => r.id)
   return id
 }
-
+//funcion que devuelve el valor de la propiedad likes
 const findLike = async () => {
   const response = await blogsInDb()
   const likes = response.map(r => r.likes)
   return likes
 }
+//funcion para crear una propiedad de likes a un objeto
+function addObjectLikes(obj, likes) {
+  obj.likes = likes;
+}
 
 module.exports = {
-  nonExistingId, blogsInDb, findId, initialBlogs, findLike
+  nonExistingId, blogsInDb, findId, initialBlogs, findLike, addObjectLikes
 }

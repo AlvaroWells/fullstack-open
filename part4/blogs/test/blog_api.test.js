@@ -66,16 +66,30 @@ test('if likes property is missing, it defaults to 0', async () => {
     .expect('Content-Type', /application\/json/)
 
   const response = await helper.blogsInDb()
-  console.log(response)
+  // console.log(response)
   newBlog = response.find(b => b.likes === undefined)
-  // console.log(newBlog)
-  newBlog.likes = 0
-  // console.log(newBlog)
+  helper.addObjectLikes(newBlog, 0)
 
   const likes = await helper.findLike()
   expect(likes).toBeDefined()
   expect(newBlog.likes).toBe(0)
 })
+
+test('if title or url is missing, it returns 400 error', async () => {
+  let newBlog = {
+    title: '',
+    author: 'author',
+    url: '',
+    likes: 12
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+    .expect('Content-Type', /application\/json/)
+})
+
 
 afterAll(() => {
   mongoose.connection.close()

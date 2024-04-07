@@ -10,7 +10,7 @@ blogRouter.get('/', async (request, response) => {
 blogRouter.post('/', async (request, response, next) => {
   const body = request.body
 
-  if (!body.title) {
+  if (!body.title || !body.url) {
     return response.status(400).json({
       error: 'blog missing'
     })
