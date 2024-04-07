@@ -73,6 +73,10 @@ test('if likes property is missing, it defaults to 0', async () => {
   const likes = await helper.findLike()
   expect(likes).toBeDefined()
   expect(newBlog.likes).toBe(0)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+
 })
 
 test('if title or url is missing, it returns 400 error', async () => {
@@ -88,6 +92,9 @@ test('if title or url is missing, it returns 400 error', async () => {
     .send(newBlog)
     .expect(400)
     .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
 })
 
 
