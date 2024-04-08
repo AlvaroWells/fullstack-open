@@ -14,11 +14,10 @@ const Blog = require('../models/blog')
 beforeEach(async () => {
   await Blog.deleteMany({})
 
-  let blogObject = new Blog(helper.initialBlogs[0])
-  await blogObject.save()
-
-  blogObject = new Blog(helper.initialBlogs[1])
-  await blogObject.save()
+  for (let blog of helper.initialBlogs) {
+    let blogObject = new Blog(blog)
+    await blogObject.save()
+  }
 })
 
 describe('Blog API', () => {
@@ -98,6 +97,41 @@ describe('Blog API', () => {
 
       const blogsAtEnd = await helper.blogsInDb()
       expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+    })
+  })
+  describe('DELETE /api/blogs', () => {
+    test('a blog can be deleted', async () => {
+      const blogsAtStart = await helper.blogsInDb()
+      const blogToDelete = blogsAtStart[0]
+
+      await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .expect(204)
+
+      const blogsAtEnd = await helper.blogsInDb()
+
+      expect(blogsAtEnd).toHaveLength(
+        helper.initialBlogs.length - 1
+      )
+
+      const blogs = blogsAtEnd.map(b => b.title)
+
+      expect(blogs).not.toContain(blogToDelete.title)
+    })
+  })
+  describe('PUT /apli/blogs', () => {
+    test('blogs likes can be updated', async () => {
+      const blogsAtStart = await helper.blogsInDb()
+      const blogToUpdate = blogsAtStart[0]
+
+      helper.addObjectLikes(blogToUpdate, 500)
+      console.log(blogToUpdate)
+
+      await api
+        .put(`/api/blogs/${blogToUpdate.id}`)
+        .expect(200)
+
+      expect(blogToUpdate.likes).toBe(500)
     })
   })
 })

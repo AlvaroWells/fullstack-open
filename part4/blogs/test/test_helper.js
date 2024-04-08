@@ -15,8 +15,6 @@ const initialBlogs = [
   }
 ]
 
-
-
 const nonExistingId = async () => {
   const blog = new Blog({ content: 'willremovethissoon' })
   await blog.save()
@@ -24,12 +22,12 @@ const nonExistingId = async () => {
 
   return blog._id.toString()
 }
-//funcion que devuelve las
+//funcion que devuelve los blogs de la base de datos de prueba
 const blogsInDb = async () => {
   const blog = await Blog.find({})
   return blog.map(blog => blog.toJSON())
 }
-//función que devuelve las ids de la base de datos
+//función que devuelve las ids de la base de datos de prueba
 const findId = async () => {
   const response = await blogsInDb()
   const id = response.map(r => r.id)
