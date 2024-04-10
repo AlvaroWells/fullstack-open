@@ -7,6 +7,10 @@ const noteSchema = new mongoose.Schema({
     minlength: 5
   },
   important: Boolean,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
 })
 
 // Configuramos la transformación de la representación JSON de los documentos de la base de datos.

@@ -2,6 +2,7 @@ POST http://localhost:3001/api/notes HTTP/1.1
 content-type: application/json
 
 {
-    "content": "oumama",
-    "important": false
+    "content": "User id testing 2.0",
+    "important": true,
+    "userId": "66164d04878f3785ab926cdf"
 }

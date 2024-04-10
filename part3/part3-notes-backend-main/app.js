@@ -9,6 +9,8 @@ const app = express()
 const cors = require('cors')
 // Importación del enrutador de notas desde el controlador de notas.
 const notesRouter = require('./controllers/notes')
+//importación del enrutador de usuarios desde el controlador de usuarios.
+const usersRouter = require('./controllers/users')
 // Importación de middleware personalizado para manejar ciertas operaciones comunes.
 const middleware = require('./utils/middleware')
 // Importación del módulo de registro para registrar mensajes.
@@ -44,6 +46,8 @@ app.use(middleware.requestLogger)
 
 // Asignación del enrutador de notas al punto final '/api/notes'.
 app.use('/api/notes', notesRouter)
+// Asignación del enrutador de usuarios al endpoint '/api/users/'
+app.use('/api/users', usersRouter)
 
 // Uso de middleware personalizado para manejar solicitudes a puntos finales desconocidos.
 app.use(middleware.unknownEndpoint)
