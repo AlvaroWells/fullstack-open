@@ -1,8 +1,8 @@
 POST http://localhost:3001/api/notes HTTP/1.1
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IldlbGxzIiwiaWQiOiI2NjE2NjcwOGM4MDYxNjhjMDRiNzI1MTEiLCJpYXQiOjE3MTI3NjA2MTV9.uwMAUqiZkT3e3lmnKCeOldEtf4LAlk6bpYWT9WER7Tg
 
 {
-    "content": "User id testing 2.0",
-    "important": true,
-    "userId": "66164d04878f3785ab926cdf"
+    "content": "Is working the token Authorization?",
+    "important": true
 }

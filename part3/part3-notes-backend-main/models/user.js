@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
   },
   name: String,
-  passowordHash: String,
+  passwordHash: String,
   notes: [
     {
       //Los identificadores de las notas se almacenan dentro del documento del usuario como una matriz de IDs de Mongo. La definición es la siguiente:
@@ -25,7 +25,7 @@ userSchema.set('toJSON', {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
-    delete returnedObject.passowordHash
+    delete returnedObject.passwordHash
   }
 })
 
