@@ -23,7 +23,7 @@ describe('total likes', () => {
 
   test('when list has more than one blog, sum all the likes', () => {
     const likesArray = blogsArray.map(blog => blog.likes)
-    
+
     const total = likesArray.reduce((acc, currentValue) => acc + currentValue, 0)
 
     const result = listHelper.totalLikes(blogsArray)

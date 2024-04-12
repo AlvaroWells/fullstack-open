@@ -17,26 +17,31 @@ mongoose.set('strictQuery', false)
 mongoose.connect(url)
 
 //definimos el esquema de una nota que se almacena en la variable noteSchema. El esquema le dice a Mongoose cómo se almacenarán los objetos de nota en la base de datos.
-const blogSchema = new mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
-  likes: Number
+const userSchema = new mongoose.Schema({
+  username: String,
+  passwordHash: String,
+  name: String,
+  blogs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Blog"
+    }
+  ]
 })
 
 //En la definición del modelo Note, el primer parámetro de "Note" es el nombre singular del modelo. El nombre de la colección será el plural notes en minúsculas, porque la convención de Mongoose es nombrar automáticamente las colecciones como el plural (por ejemplo, notes) cuando el esquema se refiere a ellas en singular (por ejemplo, Note).
-const testBlog = mongoose.model('Blog', blogSchema)
+const testUserBlog = mongoose.model('User', userSchema)
 
 //A continuación la aplicación crea un nuevo objeto de nota con la ayuda del modelo Note:
-const blog = new testBlog({
-  title: 'Manitas de oro',
-  author: 'dog wel',
-  url: 'dogwel@lvl.p',
-  likes: 222
+const user = new testUserBlog({
+  username: 'Manolo2020',
+  passwordHash: '123',
+  name: 'Manolo',
+  blogs: []
 })
 
 //Guardar el objeto en la base de datos ocurre con el método save, que se puede proporcionar con un controlador de eventos con el método then:
-blog.save().then(result => {
+user.save().then(result => {
   console.log(result)
   console.log('blog saved!')
   mongoose.connection.close()
