@@ -5,7 +5,8 @@ const User = require('../models/user')
 
 //ruta GET endpoint /api/users
 usersRouter.get('/', async (request, response) => {
-  const users = await User.find({})
+  const users = await User.find({}).populate('blogs') //añadimos la unión entre base de datos y usuarios con el método populate de mongoose
+
   response.json(users)
 })
 //ruta post endpoint /api/users
