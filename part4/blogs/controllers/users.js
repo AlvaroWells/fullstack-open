@@ -16,11 +16,32 @@ usersRouter.post('/', async (request, response) => {
   const usersInDb = await User.find({})
   const userExist = usersInDb.some(u => u.username === username)
 
-  if (!username || !password) {
-    return response.status(400).json({ error: 'username and password are required.' })
-  } else if (username.length && password.length < 3) {
-    return response.status(400).json({ error: 'username and password minimum are three characters' })
-  } else if (userExist) {
+  // if ((!username && password)) {
+  //   return response.status(400).json({ error: 'username and password are required.' })
+  // } else if (username.length && password.length < 3) {
+  //   return response.status(400).json({ error: 'username and password minimum are three characters' })
+  // } else if (userExist) {
+  //   return response.status(400).json({ error: 'username must be unique' })
+  // }
+
+  //Validación longitud de nombre usuario
+  if (username.length < 3 || username.lenth > 20) {
+    return response.status(400).json({ error: 'El nombre de usuario debe tener entre 3 y 20 carácteres de longitud' })
+  }
+  //Validación de carácteres especiales
+  const validUsernameRegex = /^[a-zA-Z0-9_-]+$/
+  if (!validUsernameRegex.test(username)) {
+    return response.status(400).json({ error: 'El nombre de usuario sólo puede contener letras, números, guiones bajos y guiones.' })
+  }
+  //Validación de contraseña
+  const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=])[0-9a-zA-Z!@#$%^&*()-_+=]{8,}$/
+  const isValidPassword = passwordRegex.test(password)
+
+  if (!isValidPassword) {
+    return response.status(400).json({ error: 'La contraseña debe contener almenos 8 carácteres de longitud, una minúscula, una mayúscula, un dígito y un carácter especial,  ej: @%$...' })
+  }
+
+  if (userExist) {
     return response.status(400).json({ error: 'username must be unique' })
   }
 
