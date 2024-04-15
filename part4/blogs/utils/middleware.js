@@ -29,9 +29,19 @@ const errorHandler = (error, request, response, next) => {
 
   next(error)
 }
+//funcion middleware para extraer el token del paquete jasonwebtoken
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer')) {
+    request.token = authorization.replace('Bearer ', '')
+  }
+
+  next()
+}
 
 module.exports = {
   requestLogger,
   unknownEndpoint,
-  errorHandler
+  errorHandler,
+  tokenExtractor
 }
