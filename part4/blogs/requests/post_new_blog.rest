@@ -1,10 +1,10 @@
 POST http://localhost:3003/api/blogs/ HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBlZHJpdG8xMjM0IiwiaWQiOiI2NjFkNDEzNDhkMTRkZTY2YTdjYjJmYjYiLCJpYXQiOjE3MTMxOTQxNTd9.Ov4Exc6vUQAfq3sUD6WM1GnYIXC0S9yo0qIRWQ4J8_M
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFsdWxvbHgiLCJpZCI6IjY2MWNlMjI2OTQ5YzAxYWVmN2UxNjU1NCIsImlhdCI6MTcxMzI1Njg2MH0.FXa2KUFxrP6GF4RfcIqsa9fU7M66_heoVdLczB6vd3I
 
 {
-  "title": "Soy un niño rata",
-  "author": "Pedro the kido",
-  "url": "https://ratkid.com",
-  "likes": 1000000
+  "title": "Un día menos para el msi",
+  "author": "Alvaro Wells",
+  "url": "https://msisoon.com",
+  "likes": 23
 }
