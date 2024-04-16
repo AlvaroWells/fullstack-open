@@ -62,10 +62,10 @@ blogRouter.delete('/:id', async (request, response) => {
     if (!decodedToken || !decodedToken.id) {
       return response.status(401).json({ error: 'token invalid' })
     }
-
+    //guardamos la información de los ids que provienen de la base de datos
     const blog = await Blog.findById(request.params.id)
     const user = await User.findById(decodedToken.id)
-
+    //convertimos los objetos id de la base de datos a una strig y los comparamos.
     if (blog.user.toString() === user.id.toString()) {
       await Blog.findByIdAndDelete(request.params.id)
       response.status(204).end()
