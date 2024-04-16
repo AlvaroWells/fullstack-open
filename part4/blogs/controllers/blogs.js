@@ -73,7 +73,7 @@ blogRouter.delete('/:id', async (request, response) => {
       return response.status(403).json({ error: 'You are not authorized to delete this blog' })
     }
   } catch (error) {
-    response.status(500).json({ error: 'server error' })
+    response.status(500).json({ error: error.message })
   }
 })
 
