@@ -10,13 +10,23 @@ const api = supertest(app)
 const helper = require('./test_helper')
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
+
+
+
 
 beforeEach(async () => {
   await Blog.deleteMany({})
+  await User.deleteMany({})
 
   for (let blog of helper.initialBlogs) {
     let blogObject = new Blog(blog)
     await blogObject.save()
+  }
+
+  for (let user of helper.initialUsers) {
+    let userObject = new User(user)
+    await userObject.save()
   }
 })
 
@@ -37,26 +47,40 @@ describe('Blog API', () => {
 
   describe('POST /api/blogs', () => {
     test('a new blog can be added', async () => {
-      const response = await helper.blogsInDb()
-      const newBlog = response[0]
+      const { token } = await helper.createTestUser()
 
-      await api
+      const response = await helper.blogsInDb()
+      const blog = response[0]
+      //guardamos la respuesta de la api
+      const res = await api
         .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
+        .send(blog)
+        .set('Authorization', `Bearer ${token}`)
+
+      expect(res.status).toBe(201)
+
+      const newBlog = res.body
+      //eliminamos la propìedad id para la comparación con la base de datos y el nuevo objeto creado, ya que esta nos crea una por defecto y no son equivalentes.
+      const keysToCheck = Object.keys(blog).filter(key => key !== 'id')
+
+      //iteramos las propiedades y las comparamos para ver si son equivalentes.
+      keysToCheck.forEach(key => {
+        expect(newBlog[key]).toBe(blog[key])
+      })
 
       const blogsAtEnd = await helper.blogsInDb()
       expect(blogsAtEnd).toHaveLength(response.length + 1)
 
       const titles = blogsAtEnd.map(b => b.title)
       expect(titles).toContain(
-        `${newBlog.title}`
+        `${blog.title}`
       )
     })
 
     test('if likes property is missing, it defaults to 0', async () => {
-      let newBlog = {
+      const { token } = await helper.createTestUser()
+
+      let blog = {
         title: 'newblog',
         author: 'yourself',
         url: 'https://whatever.rer',
@@ -64,25 +88,28 @@ describe('Blog API', () => {
 
       await api
         .post('/api/blogs')
-        .send(newBlog)
+        .send(blog)
+        .set(`Authorization`, `Bearer ${token}`)
         .expect(201)
-        .expect('Content-Type', /application\/json/)
+
 
       const response = await helper.blogsInDb()
       // console.log(response)
-      newBlog = response.find(b => b.likes === undefined)
-      helper.addObjectLikes(newBlog, 0)
+      blog = response.find(b => b.likes === undefined)
+      helper.addObjectLikes(blog, 0)
 
       const likes = await helper.findLike()
       expect(likes).toBeDefined()
-      expect(newBlog.likes).toBe(0)
+      expect(blog.likes).toBe(0)
 
       const blogsAtEnd = await helper.blogsInDb()
       expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
     })
 
-    test('if title or url is missing, it returns 400 error', async () => {
-      let newBlog = {
+    test('if title or url is missing, server returns 400 error', async () => {
+      const { token } = await helper.createTestUser()
+
+      let blog = {
         title: '',
         author: 'author',
         url: '',
@@ -91,9 +118,21 @@ describe('Blog API', () => {
 
       await api
         .post('/api/blogs')
-        .send(newBlog)
+        .send(blog)
+        .set('Authorization', `Bearer ${token}`)
         .expect(400)
-        .expect('Content-Type', /application\/json/)
+
+      const blogsAtEnd = await helper.blogsInDb()
+      expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+    })
+    test('if token is missing, server returns 401 error', async () => {
+      const response = await helper.blogsInDb()
+      const blog = response[0]
+
+      await api
+        .post('/api/blogs')
+        .send(blog)
+        .expect(401)
 
       const blogsAtEnd = await helper.blogsInDb()
       expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)

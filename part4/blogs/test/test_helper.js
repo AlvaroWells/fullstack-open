@@ -45,13 +45,10 @@ function addObjectLikes(obj, likes) {
   obj.likes = likes;
 }
 
-//exportaciones de funciones y objetos de los blogs
-module.exports = {
-  nonExistingId, blogsInDb, findId, initialBlogs, findLike, addObjectLikes
-}
 //FUNCIONES Y ARRAY/OBJETOS PARA TESTING DE LOS USUARIOS EN APP BLOGS
 
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
 
 const initialUsers = [
   {
@@ -71,6 +68,29 @@ const usersInDb = async () => {
   return users.map(u => u.toJSON())
 }
 
+const createTestUser = async () => {
+  const user = new User({
+    username: 'testuser',
+    password: '12345',
+    name: 'testname'
+  })
+  //guardamos el usuario
+  await user.save()
+  //generamos el token, le pasamos como parámetro el objeto id
+  const token = jwt.sign({ id: user._id }, process.env.SECRET)
+
+  return { user, token }
+}
+
+
 module.exports = {
-  initialUsers, usersInDb
+  nonExistingId,
+  blogsInDb,
+  findId,
+  initialBlogs,
+  findLike,
+  addObjectLikes,
+  initialUsers,
+  usersInDb,
+  createTestUser
 }
