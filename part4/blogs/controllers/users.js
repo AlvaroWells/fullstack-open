@@ -16,14 +16,6 @@ usersRouter.post('/', async (request, response) => {
   const usersInDb = await User.find({})
   const userExist = usersInDb.some(u => u.username === username)
 
-  // if ((!username && password)) {
-  //   return response.status(400).json({ error: 'username and password are required.' })
-  // } else if (username.length && password.length < 3) {
-  //   return response.status(400).json({ error: 'username and password minimum are three characters' })
-  // } else if (userExist) {
-  //   return response.status(400).json({ error: 'username must be unique' })
-  // }
-
   //Validación longitud de nombre usuario
   if (username.length < 3 || username.lenth > 20) {
     return response.status(400).json({ error: 'El nombre de usuario debe tener entre 3 y 20 carácteres de longitud' })
@@ -54,7 +46,7 @@ usersRouter.post('/', async (request, response) => {
     name,
   })
 
-  const savedUser = user.save()
+  const savedUser = await user.save()
 
   response.status(201).json(savedUser)
 })

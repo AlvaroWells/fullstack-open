@@ -45,6 +45,8 @@ function addObjectLikes(obj, likes) {
   obj.likes = likes;
 }
 
+
+
 //FUNCIONES Y ARRAY/OBJETOS PARA TESTING DE LOS USUARIOS EN APP BLOGS
 
 const User = require('../models/user')
@@ -79,7 +81,17 @@ const createTestUser = async () => {
   //generamos el token, le pasamos como parámetro el objeto id
   const token = jwt.sign({ id: user._id }, process.env.SECRET)
 
-  return { user, token }
+  const blog = new Blog({
+    title: 'willremovesoon',
+    author: 'you',
+    url: 'xxx',
+    likes: 0,
+    user: user._id
+  })
+
+  await blog.save()
+
+  return { user, token, blog }
 }
 
 

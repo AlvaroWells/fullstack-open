@@ -1,2 +1,2 @@
-DELETE http://localhost:3003/api/blogs/6620e2d4b1bc875c42bdb2ef
+DELETE http://localhost:3003/api/blogs/66263fd008a6bcc8b003e2d4
 Authorization: {{$dotenv %BEARER_TOKEN}}

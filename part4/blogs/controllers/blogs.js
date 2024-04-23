@@ -54,16 +54,22 @@ blogRouter.post('/', middleware.userExtractor, async (request, response) => {
 blogRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
   try {
     const user = request.user
+    console.log('User:', user)
     //guardamos la información de los ids que provienen de la base de datos
     const blog = await Blog.findById(request.params.id)
+    console.log('blog', blog)
+    if (!blog) {
+      return response.status(404).json({ error: 'Blog not found' })
+    }
     //convertimos los objetos id de la base de datos a una strig y los comparamos.
     if (blog.user.toString() === user.id.toString()) {
       await Blog.findByIdAndDelete(request.params.id)
       response.status(204).end()
     } else {
-      return response.status(403).json({ error: 'You are not authorized to delete this blog' })
+      return response.status(401).json({ error: 'You are not authorized to delete this blog' })
     }
   } catch (error) {
+    console.error('Error', error.message)
     response.status(500).json({ error: error.message })
   }
 })

@@ -14,7 +14,6 @@ const User = require('../models/user')
 
 
 
-
 beforeEach(async () => {
   await Blog.deleteMany({})
   await User.deleteMany({})
@@ -140,22 +139,42 @@ describe('Blog API', () => {
   })
   describe('DELETE /api/blogs', () => {
     test('a blog can be deleted', async () => {
+      const { token, blog } = await helper.createTestUser()
+
+      const blogToDelete = blog
       const blogsAtStart = await helper.blogsInDb()
-      const blogToDelete = blogsAtStart[0]
 
       await api
-        .delete(`/api/blogs/${blogToDelete.id}`)
+        .delete(`/api/blogs/${blogToDelete._id}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(204)
 
       const blogsAtEnd = await helper.blogsInDb()
 
       expect(blogsAtEnd).toHaveLength(
-        helper.initialBlogs.length - 1
+        blogsAtStart.length - 1
       )
 
       const blogs = blogsAtEnd.map(b => b.title)
 
       expect(blogs).not.toContain(blogToDelete.title)
+    })
+    test('deleting a blog with invalid token returns 401', async () => {
+      const { blog } = await helper.createTestUser()
+
+      const blogsAtStart = await helper.blogsInDb()
+
+      await api
+        .delete(`/api/blogs/${blog._id}`)
+        .expect(401)
+
+      const blogsAtEnd = await helper.blogsInDb()
+
+      expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
+
+      const blogs = blogsAtEnd.map(b => b.title)
+
+      expect(blogs).toContain(blog.title)
     })
   })
   describe('PUT /apli/blogs', () => {

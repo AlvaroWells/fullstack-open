@@ -1,10 +1,13 @@
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt');
+const User = require('./models/user');
+const Blog = require('./models/blog');
+
 
 if (process.argv.length < 3) {
   console.log('give password as argument')
   process.exit(1)
 }
-
 
 const password = process.argv[2]
 
@@ -15,45 +18,48 @@ const url =
 
 mongoose.set('strictQuery', false)
 mongoose.connect(url)
+  .then(async () => {
+    console.log('Connected to MongoDB');
 
-//definimos el esquema de una nota que se almacena en la variable noteSchema. El esquema le dice a Mongoose cómo se almacenarán los objetos de nota en la base de datos.
-const blogSchema = new mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-  },
-  likes: Number
+    // Crear usuarios
+    const user1 = new User({
+      username: 'testuser1',
+      name: 'Test User 1',
+      passwordHash: await bcrypt.hash('password1', 10)
+    });
+    const user2 = new User({
+      username: 'testuser2',
+      name: 'Test User 2',
+      passwordHash: await bcrypt.hash('password2', 10)
+    });
 
-})
+    await user1.save();
+    await user2.save();
 
-//En la definición del modelo Note, el primer parámetro de "Note" es el nombre singular del modelo. El nombre de la colección será el plural notes en minúsculas, porque la convención de Mongoose es nombrar automáticamente las colecciones como el plural (por ejemplo, notes) cuando el esquema se refiere a ellas en singular (por ejemplo, Note).
-const testBlog = mongoose.model('Blog', blogSchema)
+    // Crear blogs y asignarlos a los usuarios
+    const blog1 = new Blog({
+      title: 'Endless Story',
+      author: 'Myself',
+      url: 'https://endlessStory.rer',
+      likes: 222,
+      user: user1._id
+    });
+    const blog2 = new Blog({
+      title: 'Mario & cia',
+      author: 'Mario itself',
+      url: 'https://marioSelf.es',
+      likes: 15,
+      user: user2._id
+    });
 
-//A continuación la aplicación crea un nuevo objeto de nota con la ayuda del modelo Note:
-const blog = new testBlog({
-  title: 'cualquiercosa',
-  author: 'miguel',
-  url: 'https://cualqueircoisa.com',
-  username: {
-    user: 'h',
-    name: 'h1'
-  },
-  likes: 1000
-})
+    await blog1.save();
+    await blog2.save();
 
-//Guardar el objeto en la base de datos ocurre con el método save, que se puede proporcionar con un controlador de eventos con el método then:
-blog.save().then(result => {
-  console.log(result)
-  console.log('blog saved!')
-  mongoose.connection.close()
-})
-
-// Bote.find({ important: true }).then(result => {
-//   result.forEach(note => {
-//     console.log(note)
-//   })
-//   mongoose.connection.close()
-// })
+    console.log('Test data created');
+  })
+  .catch(error => {
+    console.error('Error connecting to MongoDB:', error.message);
+  })
+  .finally(() => {
+    mongoose.connection.close();
+  });
