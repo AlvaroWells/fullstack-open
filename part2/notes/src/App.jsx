@@ -43,7 +43,6 @@ export const App = () => {
     const timeoutId = userLoggedSetTimeOut(60000)
     //limpiamos el temporizador
     return () => clearTimeout(timeoutId)
-    
   }, [])
 
   
@@ -61,7 +60,7 @@ export const App = () => {
         setNewNote('')
       })
   }
-  newNote.concat
+  
   const handleNoteChange = (e) => {
     console.log(e.target.value)
     setNewNote(e.target.value)

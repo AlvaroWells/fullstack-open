@@ -3,8 +3,8 @@ Content-Type: application/json
 Authorization: {{$dotenv %BEARER_TOKEN}}
 
 {
-  "title": "Un día menos para el msi",
+  "title": "Faker el gran favorito",
   "author": "Alvaro Wells",
   "url": "https://msisoon.com",
-  "likes": 23
+  "likes": 2000
 }
