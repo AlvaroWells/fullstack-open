@@ -12,6 +12,7 @@ function App() {
   const [newBlogTitle, setNewBlogTitle] = useState('')
   const [newBlogAuthor, setNewBlogAuthor] = useState('')
   const [newBlogUrl, setNewBlogUrl] = useState('')
+  const [newBlogLikes, setNewBlogLikes] = useState(0)
   const [errorMessage, setErrorMessage] = useState(null)
 
 
@@ -73,7 +74,7 @@ function App() {
       setUsername('')//->limpiamos el componente cuando enviamos el form
       setPassword('')//->limpiamos el componente cuando enviamos el form
     } catch (exception) {
-
+      //TODO SETERROR
     }
   }
   
@@ -82,7 +83,8 @@ function App() {
     const blogObject = {
       title: newBlogTitle,
       author: newBlogAuthor,
-      url: newBlogUrl
+      url: newBlogUrl,
+      likes: newBlogLikes
     }
 
     await blogService
@@ -92,6 +94,7 @@ function App() {
         setNewBlogTitle('')
         setNewBlogAuthor('')
         setNewBlogUrl('')
+        setNewBlogLikes(0)
       })
   }
 
@@ -155,6 +158,15 @@ function App() {
                   onChange={({ target }) => setNewBlogUrl(target.value)}
                 />
             </div>
+            <div>
+             likes:
+                <input
+                  type='number'
+                  url='Likes'
+                  value={newBlogLikes}
+                  onChange={({ target }) => setNewBlogLikes(target.value)}
+                />
+            </div>
           <button type='submit'>create</button>
           </form>
           <h2>Blogs</h2>
@@ -163,6 +175,7 @@ function App() {
               <p>title: {blog.title}</p>
               <p>author: {blog.author}</p>
               <p>url: {blog.url}</p>
+              <p>likes: {blog.likes}</p>
             </div>
           ))}
         </>
