@@ -4,3 +4,5 @@ package.json
 .env
 test.js
 .vscode
+
+!part5/blogs-frontend/*.json
