@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { Notification } from './components/Notification'
 import './App.css'
 
 
@@ -14,6 +15,7 @@ function App() {
   const [newBlogUrl, setNewBlogUrl] = useState('')
   const [newBlogLikes, setNewBlogLikes] = useState(0)
   const [errorMessage, setErrorMessage] = useState(null)
+  const [addMessage, setAddMessage] = useState(null)
 
 
   useEffect(() => {
@@ -30,7 +32,7 @@ function App() {
 
     if (handleLoggout) {
       setUser(null)
-    } else {
+    } else { //-->regla de tiempo para eliminar el usuario registrado con token
       setTimeout(() => {
         window.localStorage.removeItem('loggedBlogappUser')
         setUser(null)
@@ -73,9 +75,15 @@ function App() {
       setUser(user)
       setUsername('')//->limpiamos el componente cuando enviamos el form
       setPassword('')//->limpiamos el componente cuando enviamos el form
-    } catch (exception) {
-      //TODO SETERROR
+    } catch (error) {
+      setErrorMessage(
+        'wrong credentials', error.message
+      )
     }
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 3000)
+    
   }
   
   const addBlog = async (event) => {
@@ -86,7 +94,7 @@ function App() {
       url: newBlogUrl,
       likes: newBlogLikes
     }
-
+    
     await blogService
       .create(blogObject)
       .then(returnedBlog => {
@@ -95,12 +103,21 @@ function App() {
         setNewBlogAuthor('')
         setNewBlogUrl('')
         setNewBlogLikes(0)
+        setAddMessage(
+          `a new blog ${blogObject.title} by ${blogObject.author} added`
+        )
       })
+      setTimeout(() => {
+        setAddMessage(null)
+      }, 3000)
   }
 
   return (
     <>
-      <h1>log in to application</h1>
+      <h1>Blogs</h1>
+      <Notification 
+        errorMessage={errorMessage}
+      />
       {user === null ? (
         <form onSubmit={handleLogin}>
           <div>
@@ -125,6 +142,9 @@ function App() {
         </form>
       ) : (
         <>
+          <Notification 
+            addMessage={addMessage}
+          />
           <div>
             <p>{user.name} logged-in</p>
             <button onClick={loggoutUser}>logout</button>

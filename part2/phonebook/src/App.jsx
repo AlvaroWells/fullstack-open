@@ -51,7 +51,7 @@ const App = () => {
           })
           .catch(error => {
             setErrorMessage(
-              `Failed to delete contact ${existingPerson.name}`
+              `Failed to delete contact ${existingPerson.name}`, error.message
             )
           })
           setTimeout(() => {
