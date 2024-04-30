@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import { Notification } from './components/Notification'
@@ -6,6 +6,7 @@ import { LoginForm } from './components/LoginForm'
 import { BlogForm } from './components/BlogForm'
 import { Blogs } from './components/Blogs'
 import { User } from './components/User'
+import { Togglable } from './components/Togglable'
 import './App.css'
 
 
@@ -14,12 +15,10 @@ function App() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [blogs, setBlogs] = useState([])
-  const [newBlogTitle, setNewBlogTitle] = useState('')
-  const [newBlogAuthor, setNewBlogAuthor] = useState('')
-  const [newBlogUrl, setNewBlogUrl] = useState('')
-  const [newBlogLikes, setNewBlogLikes] = useState(0)
   const [errorMessage, setErrorMessage] = useState(null)
   const [addMessage, setAddMessage] = useState(null)
+  const [loginVisible, setLoginVisible] = useState(false)
+  
 
 
   useEffect(() => {
@@ -66,20 +65,6 @@ function App() {
   }
   //*
 
-  //* FUNCIONES QUE GUARDAN EL VALOR DEL INPUT DE LOS BLOGS.
-  const handleNewBlogTitle = (event) => {
-    setNewBlogTitle(event.target.value)
-  }
-  const handleNewBlogAuthor = (event) => {
-    setNewBlogAuthor(event.target.value)
-  }
-  const handleNewBlogUrl = (event) => {
-    setNewBlogUrl(event.target.value)
-  }
-  const handleNewBlogLikes = (event) => {
-    setNewBlogLikes(event.target.value)
-  }
-  //*
   
   //funcion para el manejo del login con localstorage token
   const handleLogin = async (event) => {
@@ -107,14 +92,8 @@ function App() {
     
   }
   //funcion para agregar un nuevo blog haciendo una llamada a la api
-  const addBlog = async (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: newBlogTitle,
-      author: newBlogAuthor,
-      url: newBlogUrl,
-      likes: newBlogLikes
-    }
+  const addBlog = async (blogObject) => {
+    blogFormRef.current.toggleVisibility()
     
     await blogService
       .create(blogObject)
@@ -123,7 +102,6 @@ function App() {
         setNewBlogTitle('')
         setNewBlogAuthor('')
         setNewBlogUrl('')
-        setNewBlogLikes(0)
         setAddMessage(
           `a new blog ${blogObject.title} by ${blogObject.author} added`
         )
@@ -133,13 +111,16 @@ function App() {
       }, 3000)
   }
 
-  return (
-    <>
-      <h1>Blogs</h1>
-      <Notification 
-        errorMessage={errorMessage}
-      />
-      {user === null ? (
+  const loginForm = () => {
+    const hideWhenVisible = { display: loginVisible ? 'none' : '' }
+    const showWhenVisible = { display: loginVisible ? '' : 'none' }
+
+    return (
+      <div>
+        <div style={hideWhenVisible}>
+          <button onClick={() => setLoginVisible(true)}>log in</button>
+        </div>
+        <div style={showWhenVisible}>
         <LoginForm 
           handleLogin={handleLogin}
           handleUserName={handleUserName}
@@ -147,29 +128,37 @@ function App() {
           handlePassword={handlePassword}
           password={password}
         />
-      ) : (
-        <>
-          <Notification 
-            addMessage={addMessage}
-          />
-          <User 
-            user={user}
-            loggoutUser={loggoutUser}
-          />
+        <button onClick={() => setLoginVisible(false)}>cancel</button>
+        </div>
+      </div>
+    )
+  }
+
+  const blogFormRef = useRef()
+ 
+  return (
+    <>
+      <h1>Blogs</h1>
+      <Notification 
+        errorMessage={errorMessage}
+      />
+      {!user && loginForm()}
+      {user && <div>
+        <User 
+          user={user}
+          loggoutUser={loggoutUser}
+        />
+        <Togglable buttonLabel="new blog" ref={blogFormRef}>
           <BlogForm 
-            addBlog={addBlog}
-            newBlogTitle={newBlogTitle}
-            handleNewBlogTitle={handleNewBlogTitle}
-            newBlogAuthor={newBlogAuthor}
-            handleNewBlogAuthor={handleNewBlogAuthor}
-            newBlogUrl={newBlogUrl}
-            handleNewBlogUrl={handleNewBlogUrl}
-            newBlogLikes={newBlogLikes}
-            handleNewBlogLikes={handleNewBlogLikes}
+            createBlog={addBlog}
           />
-          <Blogs blogs={blogs}/> 
-        </>
-      )}
+        </Togglable>
+      </div>
+      }
+      <Notification 
+        addMessage={addMessage}
+      />
+      <Blogs blogs={blogs}/> 
     </>
   );
 }

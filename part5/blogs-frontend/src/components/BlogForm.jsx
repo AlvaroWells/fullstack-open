@@ -1,14 +1,23 @@
-export const BlogForm = ({
-  addBlog,
-  newBlogTitle,
-  handleNewBlogTitle,
-  newBlogAuthor,
-  handleNewBlogAuthor,
-  newBlogUrl,
-  handleNewBlogUrl,
-  newBlogLikes,
-  handleNewBlogLikes
-}) => {
+import { useState } from "react"
+
+export const BlogForm = ({ createBlog }) => {
+  const [newBlogTitle, setNewBlogTitle] = useState('')
+  const [newBlogAuthor, setNewBlogAuthor] = useState('')
+  const [newBlogUrl, setNewBlogUrl] = useState('')
+  
+  const addBlog = async (event) => {
+    event.preventDefault()
+    createBlog({
+      title: newBlogTitle,
+      author: newBlogAuthor,
+      url: newBlogUrl,
+    })
+
+    setNewBlogTitle('')
+    setNewBlogAuthor('')
+    setNewBlogUrl('')
+  }
+  
   return (
     <>
     <h3>Create new</h3>
@@ -19,7 +28,7 @@ export const BlogForm = ({
               type='text'
               title='Title'
               value={newBlogTitle}
-              onChange={handleNewBlogTitle}
+              onChange={event => setNewBlogTitle(event.target.value)}
             />
         </div>
         <div>
@@ -28,7 +37,7 @@ export const BlogForm = ({
               type='text'
               author='Author'
               value={newBlogAuthor}
-              onChange={handleNewBlogAuthor}
+              onChange={event => setNewBlogAuthor(event.target.value)}
             />
         </div>
         <div>
@@ -37,16 +46,7 @@ export const BlogForm = ({
               type='url'
               url='Url'
               value={newBlogUrl}
-              onChange={handleNewBlogUrl}
-            />
-        </div>
-        <div>
-          likes:
-            <input
-              type='number'
-              url='Likes'
-              value={newBlogLikes}
-              onChange={handleNewBlogLikes}
+              onChange={event => setNewBlogUrl(event.target.value)}
             />
         </div>
       <button type='submit'>create</button>

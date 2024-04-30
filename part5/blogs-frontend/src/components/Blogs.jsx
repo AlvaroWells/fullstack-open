@@ -7,7 +7,6 @@ export const Blogs = ({ blogs }) => {
             <p>title: {blog.title}</p>
             <p>author: {blog.author}</p>
             <p>url: {blog.url}</p>
-            <p>likes: {blog.likes}</p>
           </div>
         ))}
     </>
