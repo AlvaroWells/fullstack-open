@@ -2,13 +2,17 @@ import { useState, useEffect } from 'react'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import { Notification } from './components/Notification'
+import { LoginForm } from './components/LoginForm'
+import { BlogForm } from './components/BlogForm'
+import { Blogs } from './components/Blogs'
+import { User } from './components/User'
 import './App.css'
 
 
 function App() {
+  const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
   const [blogs, setBlogs] = useState([])
   const [newBlogTitle, setNewBlogTitle] = useState('')
   const [newBlogAuthor, setNewBlogAuthor] = useState('')
@@ -48,18 +52,35 @@ function App() {
       blogService.setToken(user.token)
     }
 
-    const timeoutTokenId = loggoutUser(6000000)//-> el token dura 10 min
+    const timeoutTokenId = loggoutUser(3000000)//-> el token dura 5 min
     //limpiamos el token pasados los 10 minutos
     return () => clearTimeout(timeoutTokenId)
   }, [])
 
+  //* FUNCIONES QUE GUARDAN EL VALOR DEL INPUT DE LOGIN
   const handleUserName = (event) => {
     setUsername(event.target.value)
   }
-
   const handlePassword = (event) => {
     setPassword(event.target.value)
   }
+  //*
+
+  //* FUNCIONES QUE GUARDAN EL VALOR DEL INPUT DE LOS BLOGS.
+  const handleNewBlogTitle = (event) => {
+    setNewBlogTitle(event.target.value)
+  }
+  const handleNewBlogAuthor = (event) => {
+    setNewBlogAuthor(event.target.value)
+  }
+  const handleNewBlogUrl = (event) => {
+    setNewBlogUrl(event.target.value)
+  }
+  const handleNewBlogLikes = (event) => {
+    setNewBlogLikes(event.target.value)
+  }
+  //*
+  
   //funcion para el manejo del login con localstorage token
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -85,7 +106,7 @@ function App() {
     }, 3000)
     
   }
-  
+  //funcion para agregar un nuevo blog haciendo una llamada a la api
   const addBlog = async (event) => {
     event.preventDefault()
     const blogObject = {
@@ -119,85 +140,34 @@ function App() {
         errorMessage={errorMessage}
       />
       {user === null ? (
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-            <input
-              type='text'
-              name='Username'
-              value={username}
-              onChange={handleUserName}
-            />
-          </div>
-          <div>
-            password
-            <input
-              type='password'
-              name='Password'
-              value={password}
-              onChange={handlePassword}
-            />
-          </div>
-          <button type='submit'>login</button>
-        </form>
+        <LoginForm 
+          handleLogin={handleLogin}
+          handleUserName={handleUserName}
+          username={username}
+          handlePassword={handlePassword}
+          password={password}
+        />
       ) : (
         <>
           <Notification 
             addMessage={addMessage}
           />
-          <div>
-            <p>{user.name} logged-in</p>
-            <button onClick={loggoutUser}>logout</button>
-          </div>
-          <h3>Create new</h3>
-          <form onSubmit={addBlog}>
-            <div>
-              title:
-                <input
-                  type='text'
-                  title='Title'
-                  value={newBlogTitle}
-                  onChange={({ target }) => setNewBlogTitle(target.value)}
-                />
-            </div>
-            <div>
-              author:
-                <input
-                  type='text'
-                  author='Author'
-                  value={newBlogAuthor}
-                  onChange={({ target }) => setNewBlogAuthor(target.value)}
-                />
-            </div>
-            <div>
-              url:
-                <input
-                  type='url'
-                  url='Url'
-                  value={newBlogUrl}
-                  onChange={({ target }) => setNewBlogUrl(target.value)}
-                />
-            </div>
-            <div>
-             likes:
-                <input
-                  type='number'
-                  url='Likes'
-                  value={newBlogLikes}
-                  onChange={({ target }) => setNewBlogLikes(target.value)}
-                />
-            </div>
-          <button type='submit'>create</button>
-          </form>
-          <h2>Blogs</h2>
-          {blogs.map(blog => (
-            <div key={blog.id}>
-              <p>title: {blog.title}</p>
-              <p>author: {blog.author}</p>
-              <p>url: {blog.url}</p>
-              <p>likes: {blog.likes}</p>
-            </div>
-          ))}
+          <User 
+            user={user}
+            loggoutUser={loggoutUser}
+          />
+          <BlogForm 
+            addBlog={addBlog}
+            newBlogTitle={newBlogTitle}
+            handleNewBlogTitle={handleNewBlogTitle}
+            newBlogAuthor={newBlogAuthor}
+            handleNewBlogAuthor={handleNewBlogAuthor}
+            newBlogUrl={newBlogUrl}
+            handleNewBlogUrl={handleNewBlogUrl}
+            newBlogLikes={newBlogLikes}
+            handleNewBlogLikes={handleNewBlogLikes}
+          />
+          <Blogs blogs={blogs}/> 
         </>
       )}
     </>
