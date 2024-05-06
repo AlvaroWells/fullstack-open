@@ -24,10 +24,26 @@ function App() {
     blogService
       .getAll()
       .then(initialBlogs => {
-        setBlogs(initialBlogs)
+        const mappedBlogs = initialBlogs.map(function (el, i) { //->establecemos el valor al index correspondiente de la propiedad likes de los blogs
+          return { index: i, value: el.likes }
+        })
+        mappedBlogs.sort(function (a, b) { //-> los ordenamos de más a menos likes
+          if (a.value < b.value) {
+            return 1
+          }
+          if (a.value > b.value) {
+            return -1
+          }
+          return 0
+        })
+        const sortedBlogs = mappedBlogs.map(function(el) {
+          return initialBlogs[el.index]
+        })
+        setBlogs(sortedBlogs)
       })
   }, [])
 
+  
   
   //funcion para manejar el tiempo del token
   const loggoutUser = (timeout) => {
