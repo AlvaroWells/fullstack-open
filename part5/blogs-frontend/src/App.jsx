@@ -35,7 +35,7 @@ function App() {
 
     if (handleLoggout) {
       setUser(null)
-    } else { //-->regla de tiempo para eliminar el usuario registrado con token
+    } else { //--> regla de tiempo para eliminar el usuario registrado con token
       setTimeout(() => {
         window.localStorage.removeItem('loggedBlogappUser')
         setUser(null)
@@ -64,7 +64,7 @@ function App() {
     setPassword(event.target.value)
   }
   //*
-
+  
   
   //funcion para el manejo del login con localstorage token
   const handleLogin = async (event) => {
@@ -112,8 +112,8 @@ function App() {
   }
 
   const loginForm = () => {
-    const hideWhenVisible = { display: loginVisible ? 'none' : '' }
-    const showWhenVisible = { display: loginVisible ? '' : 'none' }
+    const hideWhenVisible = { display: loginVisible ? 'none' : '' }//-> estilo con renderizado condicional que modifica el estado
+    const showWhenVisible = { display: loginVisible ? '' : 'none' }//-> estilo con renderizado condicional que modifica el estado
 
     return (
       <div>
@@ -148,7 +148,7 @@ function App() {
           user={user}
           loggoutUser={loggoutUser}
         />
-        <Togglable buttonLabel="new blog" ref={blogFormRef}>
+        <Togglable buttonLabel="new blog" buttonCancelLabel="cancel" ref={blogFormRef}>
           <BlogForm 
             createBlog={addBlog}
           />
@@ -159,6 +159,7 @@ function App() {
         addMessage={addMessage}
       />
       <Blogs blogs={blogs}/> 
+      
     </>
   );
 }
