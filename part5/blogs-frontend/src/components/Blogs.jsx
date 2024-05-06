@@ -1,7 +1,7 @@
 import { Togglable } from "./Togglable"
 
 
-export const Blogs = ({ blogs }) => {
+export const Blogs = ({ blogs, updateBlogLikes }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -9,6 +9,7 @@ export const Blogs = ({ blogs }) => {
     borderWidth: 1,
     marginBottom: 5
   }
+
 
   return (
     <>
@@ -19,7 +20,10 @@ export const Blogs = ({ blogs }) => {
             <Togglable buttonLabel="view" buttonCancelLabel="hide">
               <p>{blog.url}</p>
               <p>{blog.author}</p>
-              <p>likes: {blog.likes}</p>
+              <div>
+                <span>likes: {blog.likes}</span>
+                <button onClick={() => updateBlogLikes(blog.id)}>like</button>
+              </div>
             </Togglable>
           </div>
         ))}

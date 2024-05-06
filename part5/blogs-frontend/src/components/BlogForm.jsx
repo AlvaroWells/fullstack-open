@@ -5,12 +5,14 @@ export const BlogForm = ({ createBlog }) => {
   const [newBlogAuthor, setNewBlogAuthor] = useState('')
   const [newBlogUrl, setNewBlogUrl] = useState('')
   
+  
   const addBlog = async (event) => {
     event.preventDefault()
     createBlog({
       title: newBlogTitle,
       author: newBlogAuthor,
       url: newBlogUrl,
+      likes: 0
     })
 
     setNewBlogTitle('')

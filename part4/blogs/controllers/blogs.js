@@ -1,5 +1,6 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
+
 const middleware = require('../utils/middleware')
 
 
@@ -76,18 +77,24 @@ blogRouter.delete('/:id', middleware.userExtractor, async (request, response) =>
 
 
 //ruta put para actualizar los likes
-blogRouter.put('/:id', async (request, response, next) => {
-  const body = request.body
-
-  const blog = {
-    likes: body.likes
-  }
+blogRouter.put('/:id', async (request, response) => {
   try {
+    const body = request.body
+
+    const blog = {
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes
+    }
+
     const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
-    response.status(200).json(updatedBlog).end()
-  } catch(exception) {
-    next(exception)
+    response.status(200).json(updatedBlog)
+  } catch (exception) {
+    console.error(exception)
   }
 })
+
+
 
 module.exports = blogRouter

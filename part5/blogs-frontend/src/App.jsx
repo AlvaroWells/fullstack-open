@@ -18,9 +18,8 @@ function App() {
   const [errorMessage, setErrorMessage] = useState(null)
   const [addMessage, setAddMessage] = useState(null)
   const [loginVisible, setLoginVisible] = useState(false)
-  
 
-
+  //useeffect para extraer los datos de la api blogs
   useEffect(() => {
     blogService
       .getAll()
@@ -28,6 +27,7 @@ function App() {
         setBlogs(initialBlogs)
       })
   }, [])
+
   
   //funcion para manejar el tiempo del token
   const loggoutUser = (timeout) => {
@@ -93,24 +93,36 @@ function App() {
   }
   //funcion para agregar un nuevo blog haciendo una llamada a la api
   const addBlog = async (blogObject) => {
-    blogFormRef.current.toggleVisibility()
-    
-    await blogService
-      .create(blogObject)
-      .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setNewBlogTitle('')
-        setNewBlogAuthor('')
-        setNewBlogUrl('')
-        setAddMessage(
-          `a new blog ${blogObject.title} by ${blogObject.author} added`
-        )
-      })
+    try {
+      blogFormRef.current.toggleVisibility()
+  
+      const returnedBlog = await blogService.create(blogObject)
+      setBlogs(blogs.concat(returnedBlog))
+      setAddMessage(
+        `A new blog ${blogObject.title} by ${blogObject.author} added`
+      );
+  
       setTimeout(() => {
         setAddMessage(null)
-      }, 3000)
+      }, 3000);
+    } catch (error) {
+      console.error(error)
+    }
   }
+  //funcion para updatear los likes de las publicaciones de un blog independiente
+  const updateBlogLikes = async (id) => {
+    try {
+      const blogToUpdate = blogs.find(b => b.id === id)//->encontramos el blog
+      const changedBlogToUpdate = {...blogToUpdate, likes: blogToUpdate.likes + 1}//->le sumamos +1
+      
+      const returnedBlog = await blogService.updateLikes(id, changedBlogToUpdate)
+      setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
 
+    } catch (error){
+      console.error('Error updating blog', error.message)
+    }
+  }
+  
   const loginForm = () => {
     const hideWhenVisible = { display: loginVisible ? 'none' : '' }//-> estilo con renderizado condicional que modifica el estado
     const showWhenVisible = { display: loginVisible ? '' : 'none' }//-> estilo con renderizado condicional que modifica el estado
@@ -158,8 +170,10 @@ function App() {
       <Notification 
         addMessage={addMessage}
       />
-      <Blogs blogs={blogs}/> 
-      
+      <Blogs 
+        blogs={blogs}
+        updateBlogLikes={(id) => updateBlogLikes(id)}
+      /> 
     </>
   );
 }
