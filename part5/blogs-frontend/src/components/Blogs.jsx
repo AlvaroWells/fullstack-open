@@ -1,7 +1,6 @@
 import { Togglable } from "./Togglable"
 
-
-export const Blogs = ({ blogs, updateBlogLikes }) => {
+export const Blogs = ({ blogs, updateBlogLikes, deleteBlog, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -9,7 +8,7 @@ export const Blogs = ({ blogs, updateBlogLikes }) => {
     borderWidth: 1,
     marginBottom: 5
   }
-
+  
 
   return (
     <>
@@ -24,9 +23,15 @@ export const Blogs = ({ blogs, updateBlogLikes }) => {
                 <span>likes: {blog.likes}</span>
                 <button onClick={() => updateBlogLikes(blog.id)}>like</button>
               </div>
+              {user && blog.user.username === user.username && ( //--> need to get improved.
+                <div>
+                  <button onClick={() => deleteBlog(blog.id)}>remove</button>
+                </div>
+              )}
             </Togglable>
           </div>
         ))}
     </>
   )
 }
+

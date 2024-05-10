@@ -45,7 +45,7 @@ export const BlogForm = ({ createBlog }) => {
         <div>
           url:
             <input
-              type='url'
+              type='text'
               url='Url'
               value={newBlogUrl}
               onChange={event => setNewBlogUrl(event.target.value)}

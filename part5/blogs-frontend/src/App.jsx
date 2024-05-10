@@ -19,6 +19,7 @@ function App() {
   const [addMessage, setAddMessage] = useState(null)
   const [loginVisible, setLoginVisible] = useState(false)
 
+  
   //useeffect para extraer los datos de la api blogs
   useEffect(() => {
     blogService
@@ -39,25 +40,17 @@ function App() {
         const sortedBlogs = mappedBlogs.map(function(el) {
           return initialBlogs[el.index]
         })
-        setBlogs(sortedBlogs)
+        setBlogs(sortedBlogs)//-> añadimos al estado la información ordenada
       })
   }, [])
 
   
-  
   //funcion para manejar el tiempo del token
-  const loggoutUser = (timeout) => {
-    const handleLoggout = window.localStorage.removeItem('loggedBlogappUser')
-
-    if (handleLoggout) {
-      setUser(null)
-    } else { //--> regla de tiempo para eliminar el usuario registrado con token
-      setTimeout(() => {
-        window.localStorage.removeItem('loggedBlogappUser')
-        setUser(null)
-      }, timeout)
-    }
+  const loggoutUser = () => {
+    window.localStorage.removeItem('loggedBlogappUser')
+    setUser(null)
   }
+
   //efecto para manejar el localstorage del loginservice para el token de usuario
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -65,12 +58,15 @@ function App() {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
-    }
 
-    const timeoutTokenId = loggoutUser(3000000)//-> el token dura 5 min
-    //limpiamos el token pasados los 10 minutos
-    return () => clearTimeout(timeoutTokenId)
+      const timeOutTokenId = setTimeout(() => {
+        loggoutUser()
+      }, 3000)//-> 1 minuto de token
+
+      return () => clearTimeout(timeOutTokenId)
+    }
   }, [])
+  
 
   //* FUNCIONES QUE GUARDAN EL VALOR DEL INPUT DE LOGIN
   const handleUserName = (event) => {
@@ -85,7 +81,7 @@ function App() {
   //funcion para el manejo del login con localstorage token
   const handleLogin = async (event) => {
     event.preventDefault()
-
+    
     try {
       const user = await loginService.login({
         username, password,
@@ -104,9 +100,10 @@ function App() {
     }
     setTimeout(() => {
       setErrorMessage(null)
-    }, 3000)
-    
+    }, 300000)
   }
+
+
   //funcion para agregar un nuevo blog haciendo una llamada a la api
   const addBlog = async (blogObject) => {
     try {
@@ -129,9 +126,9 @@ function App() {
   const updateBlogLikes = async (id) => {
     try {
       const blogToUpdate = blogs.find(b => b.id === id)//->encontramos el blog
-      const changedBlogToUpdate = {...blogToUpdate, likes: blogToUpdate.likes + 1}//->le sumamos +1
-      
-      const returnedBlog = await blogService.updateLikes(id, changedBlogToUpdate)
+      const updatedBlog = {...blogToUpdate, likes: blogToUpdate.likes + 1}//->le sumamos +1
+
+      const returnedBlog = await blogService.updateLikes(id, updatedBlog)
       setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
 
     } catch (error){
@@ -139,6 +136,36 @@ function App() {
     }
   }
   
+  //funcion para borrar el blog seleccionado
+  const deleteBlog = async (id) => {
+    try {
+      const blogToDelete = blogs.find(blog => blog.id === id) //->encontramos el blog por la id
+      const confirmDelete = window.confirm(`
+        Remove blog ${blogToDelete.title} by ${blogToDelete.author}
+      `)//-> preguntamos al usuario si quiere borrar el blog
+      //si devuelve true
+      if (confirmDelete) {
+        await blogService.deleteBlog(id) //-> llamamos a la funcion que hace una llamada al enrutador para borrar el blog con el parámetro id
+        const updatedBlogs = blogs.filter(blog => blog.id !== id)
+        setBlogs(updatedBlogs)
+        setAddMessage(
+          `${user.username} blog ${blogToDelete.title} by ${blogToDelete.author} deleted successfully`
+        )
+        setTimeout(() => {
+          setAddMessage(null)
+        }, 5000)
+      }
+    } catch (error) {
+      console.error(error.response.data.error);
+      setErrorMessage(error.message)
+      
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  };
+
+  //función que engloba el formulario de inicio de sesión
   const loginForm = () => {
     const hideWhenVisible = { display: loginVisible ? 'none' : '' }//-> estilo con renderizado condicional que modifica el estado
     const showWhenVisible = { display: loginVisible ? '' : 'none' }//-> estilo con renderizado condicional que modifica el estado
@@ -189,6 +216,8 @@ function App() {
       <Blogs 
         blogs={blogs}
         updateBlogLikes={(id) => updateBlogLikes(id)}
+        deleteBlog={(id) => deleteBlog(id)}
+        user={user}
       /> 
     </>
   );
