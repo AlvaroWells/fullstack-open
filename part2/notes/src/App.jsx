@@ -26,7 +26,7 @@ export const App = () => {
         setNotes(initialNotes)
       })
   }, [])
-  
+
   //función para manejar el deslogeo de la aplicación del localstorage
   const userLoggedSetTimeOut = (timeout) => {
     setTimeout(() => {
@@ -57,14 +57,14 @@ export const App = () => {
         setNotes(notes.concat(returnedNote))
       })
   }
- 
+
   //ternario para filtrar si queremos todas las notas, o sólo las importantes
   const notesToShow = showAll
     ? notes
     : notes.filter(note => note.important === true) //-> Si se activa filtrará la información y devolvera las notas importantes
 
-  
-    //función para cambiar la propiedad de la nota
+
+  //función para cambiar la propiedad de la nota
   const toogleImportanceOf = (id) => {
     const note = notes.find(n => n.id === id)
     const changedNote = { ...note, important: !note.important }
@@ -87,7 +87,7 @@ export const App = () => {
   //funcion para manejar el login de usuario basado en token
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password,
@@ -133,24 +133,24 @@ export const App = () => {
   }
 
   const noteFormRef = useRef()
- 
- 
+
+
   return (
     <div>
       <h1>Notes</h1>
-      <Notification message={errorMessage}/> 
+      <Notification message={errorMessage}/>
 
       {!user && loginForm()}
       {user && <div>
         <p>{user.name} logged in</p>
         <Togglable buttonLabel="new note" ref={noteFormRef}>
-          <NoteForm 
+          <NoteForm
             createNote={addNote}
           />
         </Togglable>
-        </div>
-        }
-        
+      </div>
+      }
+
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? 'important' : 'all'}
@@ -158,14 +158,14 @@ export const App = () => {
       </div>
       <ul>
         {notesToShow.map((note, i) => (
-          <Note 
-            key={i} 
+          <Note
+            key={i}
             note={note}
-            toogleImportance={() => toogleImportanceOf(note.id)} 
+            toogleImportance={() => toogleImportanceOf(note.id)}
           />
         ))}
       </ul>
-      
+
       <Footer />
     </div>
   )

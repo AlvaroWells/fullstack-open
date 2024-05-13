@@ -10,10 +10,10 @@ axios
   .get('http://localhost:3001/api/notes')
   .then(res => {
     const notes = res.data
-    console.log(notes);
+    console.log(notes)
     ReactDOM.createRoot(document.getElementById('root')).render(
       <React.StrictMode>
         <App />
       </React.StrictMode>,
     )
-})
+  })
