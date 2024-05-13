@@ -11,21 +11,20 @@ export const Blogs = ({ blogs, updateBlogLikes, deleteBlog, user }) => {
     marginBottom: 5
   }
 
-
   return (
     <>
       <h2>Blogs</h2>
       {blogs.map(blog => (
-        <div style={blogStyle} key={blog.id}>
+        <div style={blogStyle} key={blog.id} className='blogStyle'>
           <p>{blog.title}</p>
+          <p>{blog.author}</p>
           <Togglable buttonLabel="view" buttonCancelLabel="hide">
-            <p>{blog.url}</p>
-            <p>{blog.author}</p>
+            {blog.url && <p>{blog.url}</p>}
             <div>
-              <span>likes: {blog.likes}</span>
+              {blog.likes && <span>likes: {blog.likes}</span>}
               <button onClick={() => updateBlogLikes(blog.id)}>like</button>
             </div>
-            {user && blog.user.username === user.username && ( //--> need to get improved.
+            {user && blog.user.username === user.username && (
               <div>
                 <button onClick={() => deleteBlog(blog.id)}>remove</button>
               </div>
@@ -39,7 +38,7 @@ export const Blogs = ({ blogs, updateBlogLikes, deleteBlog, user }) => {
 
 Blogs.propTypes = {
   blogs: PropTypes.array.isRequired,
-  updateBlogLikes: PropTypes.func.isRequired,
-  deleteBlog: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired
+  updateBlogLikes: PropTypes.func,
+  deleteBlog: PropTypes.func,
+  user: PropTypes.object
 }

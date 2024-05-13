@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 
 
 export const Notification = ({ addMessage, errorMessage }) => {
-  if (addMessage === null && errorMessage === null) {
+  if (!addMessage && !errorMessage) {
     return null
   }
 
@@ -44,6 +44,6 @@ export const Notification = ({ addMessage, errorMessage }) => {
 }
 
 Notification.propTypes = {
-  addMessage: PropTypes.string.isRequired,
-  errorMessage: PropTypes.string.isRequired, //->puede que sea un objeto en vez de string por el segundo argumento, */ por comprobar \*
+  addMessage: PropTypes.string,
+  errorMessage: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
 }
