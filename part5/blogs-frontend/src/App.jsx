@@ -19,7 +19,6 @@ function App() {
   const [addMessage, setAddMessage] = useState(null)
   const [loginVisible, setLoginVisible] = useState(false)
 
-  
   //useeffect para extraer los datos de la api blogs
   useEffect(() => {
     blogService
@@ -44,7 +43,6 @@ function App() {
       })
   }, [])
 
-  
   //funcion para manejar el tiempo del token
   const loggoutUser = () => {
     window.localStorage.removeItem('loggedBlogappUser')
@@ -66,22 +64,20 @@ function App() {
       return () => clearTimeout(timeOutTokenId)
     }
   }, [])
-  
 
   //* FUNCIONES QUE GUARDAN EL VALOR DEL INPUT DE LOGIN
-  const handleUserName = (event) => {
+  const handleUsername = (event) => {
     setUsername(event.target.value)
   }
   const handlePassword = (event) => {
     setPassword(event.target.value)
   }
   //*
-  
-  
+
   //funcion para el manejo del login con localstorage token
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password,
@@ -103,30 +99,30 @@ function App() {
     }, 300000)
   }
 
-
   //funcion para agregar un nuevo blog haciendo una llamada a la api
   const addBlog = async (blogObject) => {
     try {
       blogFormRef.current.toggleVisibility()
-  
+
       const returnedBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(returnedBlog))
       setAddMessage(
         `A new blog ${blogObject.title} by ${blogObject.author} added`
-      );
-  
+      )
+
       setTimeout(() => {
         setAddMessage(null)
-      }, 3000);
+      }, 3000)
     } catch (error) {
       console.error(error)
     }
   }
+
   //funcion para updatear los likes de las publicaciones de un blog independiente
   const updateBlogLikes = async (id) => {
     try {
       const blogToUpdate = blogs.find(b => b.id === id)//->encontramos el blog
-      const updatedBlog = {...blogToUpdate, likes: blogToUpdate.likes + 1}//->le sumamos +1
+      const updatedBlog = { ...blogToUpdate, likes: blogToUpdate.likes + 1 }//->le sumamos +1
 
       const returnedBlog = await blogService.updateLikes(id, updatedBlog)
       setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
@@ -135,7 +131,7 @@ function App() {
       console.error('Error updating blog', error.message)
     }
   }
-  
+
   //funcion para borrar el blog seleccionado
   const deleteBlog = async (id) => {
     try {
@@ -156,14 +152,14 @@ function App() {
         }, 5000)
       }
     } catch (error) {
-      console.error(error.response.data.error);
+      console.error(error.response.data.error)
       setErrorMessage(error.message)
-      
+
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
     }
-  };
+  }
 
   //función que engloba el formulario de inicio de sesión
   const loginForm = () => {
@@ -176,51 +172,51 @@ function App() {
           <button onClick={() => setLoginVisible(true)}>log in</button>
         </div>
         <div style={showWhenVisible}>
-        <LoginForm 
-          handleLogin={handleLogin}
-          handleUserName={handleUserName}
-          username={username}
-          handlePassword={handlePassword}
-          password={password}
-        />
-        <button onClick={() => setLoginVisible(false)}>cancel</button>
+          <LoginForm
+            handleLogin={handleLogin}
+            handleUsername={handleUsername}
+            username={username}
+            handlePassword={handlePassword}
+            password={password}
+          />
+          <button onClick={() => setLoginVisible(false)}>cancel</button>
         </div>
       </div>
     )
   }
 
   const blogFormRef = useRef()
- 
+
   return (
     <>
       <h1>Blogs</h1>
-      <Notification 
+      <Notification
         errorMessage={errorMessage}
       />
       {!user && loginForm()}
       {user && <div>
-        <User 
+        <User
           user={user}
           loggoutUser={loggoutUser}
         />
-        <Togglable buttonLabel="new blog" buttonCancelLabel="cancel" ref={blogFormRef}>
-          <BlogForm 
+        <Togglable buttonLabel="add blog" buttonCancelLabel="cancel" ref={blogFormRef}>
+          <BlogForm
             createBlog={addBlog}
           />
         </Togglable>
       </div>
       }
-      <Notification 
+      <Notification
         addMessage={addMessage}
       />
-      <Blogs 
+      <Blogs
         blogs={blogs}
         updateBlogLikes={(id) => updateBlogLikes(id)}
         deleteBlog={(id) => deleteBlog(id)}
         user={user}
-      /> 
+      />
     </>
-  );
+  )
 }
 
 export default App

@@ -1,3 +1,6 @@
+import PropTypes from 'prop-types'
+
+
 export const Notification = ({ addMessage, errorMessage }) => {
   if (addMessage === null && errorMessage === null) {
     return null
@@ -10,9 +13,9 @@ export const Notification = ({ addMessage, errorMessage }) => {
     borderStyle: 'solid',
     borderRadius: 5,
     padding: 10,
-    marginBottom: 10,  
+    marginBottom: 10,
   }
-  
+
   const errorStyle = {
     color: 'red',
     background: 'lightgrey',
@@ -20,7 +23,7 @@ export const Notification = ({ addMessage, errorMessage }) => {
     borderStyle: 'solid',
     borderRadius: 5,
     padding: 10,
-    marginBottom: 10,  
+    marginBottom: 10,
   }
 
   if (addMessage) {
@@ -38,4 +41,9 @@ export const Notification = ({ addMessage, errorMessage }) => {
       </div>
     )
   }
+}
+
+Notification.propTypes = {
+  addMessage: PropTypes.string.isRequired,
+  errorMessage: PropTypes.string.isRequired, //->puede que sea un objeto en vez de string por el segundo argumento, */ por comprobar \*
 }
