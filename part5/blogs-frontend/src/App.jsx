@@ -100,7 +100,7 @@ function App() {
   }
 
   //funcion para agregar un nuevo blog haciendo una llamada a la api
-  const addBlog = async (blogObject) => {
+  const createBlog = async (blogObject) => {
     try {
       blogFormRef.current.toggleVisibility()
 
@@ -201,7 +201,7 @@ function App() {
         />
         <Togglable buttonLabel="add blog" buttonCancelLabel="cancel" ref={blogFormRef}>
           <BlogForm
-            createBlog={addBlog}
+            createBlog={createBlog}
           />
         </Togglable>
       </div>
