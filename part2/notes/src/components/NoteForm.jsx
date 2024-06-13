@@ -27,10 +27,6 @@ export const NoteForm = ({ createNote }) => {
           onChange={handleChange}
           id='note-input'
         />
-        <input
-          value={'hello-world'}
-          onChange={handleChange}
-        />
         <button type="submit">save</button>
       </form>
     </div>

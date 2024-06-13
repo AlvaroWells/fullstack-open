@@ -53,6 +53,12 @@ app.use('/api/users', usersRouter)
 // Asignación del enrutador de login al endpoint '/api/login'
 app.use('/api/login', loginRouter)
 
+//si estamos en un ambiente de prueba, se ejecuta el controlador.
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controllers/testing')
+  app.use('/api/testing', testingRouter)
+}
+
 // Uso de middleware personalizado para manejar solicitudes a puntos finales desconocidos.
 app.use(middleware.unknownEndpoint)
 // Uso de middleware personalizado para manejar errores.

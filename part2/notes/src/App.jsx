@@ -142,7 +142,7 @@ export const App = () => {
 
       {!user && loginForm()}
       {user && <div>
-        <p>{user.name} logged in</p>
+        <p style={{ color: 'white' }}>{user.name} logged in</p>
         <Togglable buttonLabel="new note" ref={noteFormRef}>
           <NoteForm
             createNote={addNote}

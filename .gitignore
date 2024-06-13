@@ -5,4 +5,7 @@ package.json
 test.js
 .vscode
 
+
+#comando para evitar el gitignore en los archivos deseados.
 !part5/blogs-frontend/*.json
+!E2E test/*.json
